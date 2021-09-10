@@ -9,7 +9,22 @@ import reactor.core.publisher.Mono;
 public class UserServiceImpl implements UserService {
 
     @Override
-    public Mono<UserDTO> getUser() {
+    public Mono<UserDTO> getUserById(Integer id) {
+        return null;
+    }
+
+    @Override
+    public Mono<UserDTO> saveUser(UserDTO user) {
+        return null;
+    }
+
+    @Override
+    public void deleteUserById(Integer id) {
+
+    }
+
+    @Override
+    public Mono<UserDTO> updateUser(Integer id, UserDTO user) {
         return null;
     }
 }
