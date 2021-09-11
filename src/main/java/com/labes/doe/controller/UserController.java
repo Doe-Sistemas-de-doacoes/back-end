@@ -1,6 +1,7 @@
 package com.labes.doe.controller;
 
-import com.labes.doe.dto.UserDTO;
+import com.labes.doe.dto.user.CreateNewUserDTO;
+import com.labes.doe.dto.user.UserDTO;
 import com.labes.doe.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    private Mono<UserDTO> saveUser(@RequestBody UserDTO user){
+    private Mono<UserDTO> saveUser(@RequestBody CreateNewUserDTO user){
         return service.saveUser(user);
     }
 

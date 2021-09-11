@@ -1,6 +1,7 @@
 package com.labes.doe.controller;
 
-import com.labes.doe.dto.UserDTO;
+import com.labes.doe.dto.user.CreateNewUserDTO;
+import com.labes.doe.dto.user.UserDTO;
 import com.labes.doe.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,10 +55,10 @@ class UserControllerTest {
     @Test
     @DisplayName("should save a user")
     public void saveUser()  {
-        UserDTO body = UserDTO.builder().id(1).name("Fulano").build();
+        CreateNewUserDTO body = CreateNewUserDTO.builder().name("Fulano").user("fulano300").passworld("123").build();
         Mono<UserDTO> user = Mono.just(UserDTO.builder().id(1).name("Fulano").build());
 
-        given(service.saveUser(any(UserDTO.class))).willReturn(user);
+        given(service.saveUser( any( CreateNewUserDTO.class ))).willReturn(user);
 
         WebTestClient.ResponseSpec response = web
                 .post()
