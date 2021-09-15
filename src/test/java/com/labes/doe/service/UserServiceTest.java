@@ -1,6 +1,7 @@
 package com.labes.doe.service;
 
 import com.labes.doe.dto.user.CreateNewUserDTO;
+import com.labes.doe.dto.user.UpdateUserDTO;
 import com.labes.doe.dto.user.UserDTO;
 import com.labes.doe.mapper.UserMapper;
 import com.labes.doe.model.User;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -27,6 +29,7 @@ class UserServiceTest {
 
     @MockBean
     UserMapper mapper;
+
 
 
     @BeforeEach
@@ -61,7 +64,7 @@ class UserServiceTest {
         CreateNewUserDTO createNewUserDTO = getCreateUserDTO();
         User userEntity = getUser();
 
-        when(mapper.toSaveEntity( any() ) ).thenReturn( userEntity );
+        when(mapper.toEntity( any(CreateNewUserDTO.class) ) ).thenReturn( userEntity );
         when(repository.save( userEntity )).thenReturn( getMonoUser() );
         when(mapper.toDto( any() ) ).thenReturn( getUserDTO() );
 
@@ -70,8 +73,37 @@ class UserServiceTest {
                 .expectNextCount(1)
                 .verifyComplete();
 
+        verify(repository).save(userEntity);
+
     }
 
+    @Test
+    public void shouldUpdateUser(){
+        final int id = 1;
+        UpdateUserDTO userDTO = UpdateUserDTO.builder().name("Nome alterado").password("senha123").build();
+
+        User userEntity = getUser();
+
+        when(repository.findById(id)).thenReturn(getMonoUser());
+        when(mapper.toEntity( any(UserDTO.class) ) ).thenReturn(userEntity);
+        when(repository.save( userEntity )).thenReturn( getMonoUser() );
+        when(mapper.toDto( any() ) ).thenReturn( getUserDTO() );
+
+        service.updateUser( id, userDTO )
+                .as(StepVerifier::create)
+                .expectNextCount(1)
+                .verifyComplete();
+
+        verify(repository).save(userEntity);
+    }
+
+    @Test
+    public void shouldDeleteUser(){
+        final int id = 1;
+        service.deleteUserById(id);
+
+        verify(repository).deleteById(id);
+    }
 
     private Mono<User> getMonoUser() {
         return Mono.just( User.builder().id(1).name("fulano").password("123").user("Fulano5000").build() );

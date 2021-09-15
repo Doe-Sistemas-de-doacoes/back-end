@@ -1,6 +1,7 @@
 package com.labes.doe.controller;
 
 import com.labes.doe.dto.user.CreateNewUserDTO;
+import com.labes.doe.dto.user.UpdateUserDTO;
 import com.labes.doe.dto.user.UserDTO;
 import com.labes.doe.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,12 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    private void deleteUser(@PathVariable Integer id){
-        service.deleteUserById(id);
+    private Mono<Void> deleteUser(@PathVariable Integer id){
+        return service.deleteUserById(id);
     }
 
     @PutMapping("/{id}")
-    private Mono<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UserDTO user){
+    private Mono<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UpdateUserDTO user){
         return service.updateUser(id, user);
     }
 
