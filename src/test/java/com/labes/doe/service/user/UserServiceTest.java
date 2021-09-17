@@ -105,23 +105,23 @@ public class UserServiceTest {
         verify(repository).deleteById(id);
     }
 
-    private Mono<User> getMonoUser() {
+    public static Mono<User> getMonoUser() {
         return Mono.just( User.builder().id(1).name("fulano").password("123").user("Fulano5000").build() );
     }
 
-    private Mono<UserDTO> getMonoUserDTO() {
+    public static Mono<UserDTO> getMonoUserDTO() {
         return Mono.just( UserDTO.builder().id(1).name("fulano").user("Fulano5000").build() );
     }
 
-    private UserDTO getUserDTO() {
+    public static UserDTO getUserDTO() {
         return UserDTO.builder().id(1).name("fulano").user("Fulano5000").build();
     }
 
-    private CreateNewUserDTO getCreateUserDTO() {
+    public static CreateNewUserDTO getCreateUserDTO() {
         return CreateNewUserDTO.builder().name("fulano").user("Fulano5000").build();
     }
 
-    private User getUser() {
+    public static User getUser() {
         return User.builder().id(1).name("fulano").user("Fulano5000").password("123").build();
     }
 }

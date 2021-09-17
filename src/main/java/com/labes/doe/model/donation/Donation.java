@@ -1,5 +1,6 @@
 package com.labes.doe.model.donation;
 
+import com.labes.doe.model.donation.enumerations.DonationType;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -22,5 +23,8 @@ public class Donation {
 
     @Column("descricao")
     private String description;
+
+    @Column("codigo_tipo_doacao")
+    private Integer type;
 
 }

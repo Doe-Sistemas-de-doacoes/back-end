@@ -1,16 +1,15 @@
 package com.labes.doe.dto.donation;
 
 import com.labes.doe.model.donation.enumerations.DonationType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class DonationDTO {
-    private Integer id;
+public class CreateNewDonationDTO {
+    private Integer userId;
     private Integer type;
     private String description;
-
 }
