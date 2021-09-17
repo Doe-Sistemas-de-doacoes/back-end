@@ -1,9 +1,8 @@
 package com.labes.doe.mapper;
 
 import com.labes.doe.dto.user.CreateNewUserDTO;
-import com.labes.doe.dto.user.UpdateUserDTO;
 import com.labes.doe.dto.user.UserDTO;
-import com.labes.doe.model.User;
+import com.labes.doe.model.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.ReportingPolicy;

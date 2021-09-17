@@ -3,8 +3,8 @@ package com.labes.doe.service;
 import com.labes.doe.dto.user.CreateNewUserDTO;
 import com.labes.doe.dto.user.UpdateUserDTO;
 import com.labes.doe.dto.user.UserDTO;
-import com.labes.doe.mapper.UserMapper;
-import com.labes.doe.model.User;
+import com.labes.doe.mapper.user.UserMapper;
+import com.labes.doe.model.user.User;
 import com.labes.doe.repository.UserRepository;
 import com.labes.doe.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-class UserServiceTest {
+public class UserServiceTest {
 
     UserService service;
 

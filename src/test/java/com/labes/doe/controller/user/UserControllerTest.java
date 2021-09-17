@@ -24,7 +24,7 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(UserController.class)
 @AutoConfigureMockMvc
-class UserControllerTest {
+public class UserControllerTest {
 
     @Autowired
     WebTestClient web;
