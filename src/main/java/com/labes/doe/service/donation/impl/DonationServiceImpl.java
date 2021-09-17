@@ -1,14 +1,12 @@
-package com.labes.doe.service.impl;
+package com.labes.doe.service.donation.impl;
 
 import com.labes.doe.dto.donation.DonationDTO;
 import com.labes.doe.mapper.donation.DonationMapper;
-import com.labes.doe.repository.DonationRepository;
-import com.labes.doe.service.DonationService;
+import com.labes.doe.repository.donation.DonationRepository;
+import com.labes.doe.service.donation.DonationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-
-import java.util.Collection;
 
 @RequiredArgsConstructor
 @Service

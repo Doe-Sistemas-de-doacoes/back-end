@@ -1,9 +1,9 @@
-package com.labes.doe.controller;
+package com.labes.doe.controller.user;
 
 import com.labes.doe.dto.user.CreateNewUserDTO;
 import com.labes.doe.dto.user.UpdateUserDTO;
 import com.labes.doe.dto.user.UserDTO;
-import com.labes.doe.service.UserService;
+import com.labes.doe.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

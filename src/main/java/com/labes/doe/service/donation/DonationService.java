@@ -1,4 +1,4 @@
-package com.labes.doe.service;
+package com.labes.doe.service.donation;
 
 import com.labes.doe.dto.donation.DonationDTO;
 import reactor.core.publisher.Flux;

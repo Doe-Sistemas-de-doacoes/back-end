@@ -1,4 +1,4 @@
-package com.labes.doe.model;
+package com.labes.doe.model.user;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

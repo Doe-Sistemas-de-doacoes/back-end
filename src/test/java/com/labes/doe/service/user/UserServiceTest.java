@@ -1,12 +1,12 @@
-package com.labes.doe.service;
+package com.labes.doe.service.user;
 
 import com.labes.doe.dto.user.CreateNewUserDTO;
 import com.labes.doe.dto.user.UpdateUserDTO;
 import com.labes.doe.dto.user.UserDTO;
 import com.labes.doe.mapper.user.UserMapper;
 import com.labes.doe.model.user.User;
-import com.labes.doe.repository.UserRepository;
-import com.labes.doe.service.impl.UserServiceImpl;
+import com.labes.doe.repository.user.UserRepository;
+import com.labes.doe.service.user.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

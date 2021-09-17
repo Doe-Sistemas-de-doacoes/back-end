@@ -1,4 +1,4 @@
-package com.labes.doe.mapper;
+package com.labes.doe.mapper.user;
 
 import com.labes.doe.dto.user.CreateNewUserDTO;
 import com.labes.doe.dto.user.UserDTO;

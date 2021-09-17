@@ -1,4 +1,4 @@
-package com.labes.doe.model.donation;
+package com.labes.doe.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -10,17 +10,29 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table("cadastro_doacao")
-public class Donation {
+@Table("cadastro_endereco")
+public class Address {
 
     @Id
     @Column("codigo")
     private Integer id;
 
+    @Column("bairro")
+    private String neighborhood;
+
+    @Column("cidade")
+    private String city;
+
+    @Column("estado")
+    private String state;
+
+    @Column("numero")
+    private Integer number;
+
+    @Column("rua_avenida")
+    private String street;
+
     @Column("codigo_usuario")
     private Integer userId;
-
-    @Column("descricao")
-    private String description;
 
 }

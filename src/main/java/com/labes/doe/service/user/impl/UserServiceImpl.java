@@ -1,12 +1,12 @@
-package com.labes.doe.service.impl;
+package com.labes.doe.service.user.impl;
 
 import com.labes.doe.dto.user.CreateNewUserDTO;
 import com.labes.doe.dto.user.UpdateUserDTO;
 import com.labes.doe.dto.user.UserDTO;
 import com.labes.doe.mapper.user.UserMapper;
 import com.labes.doe.model.user.User;
-import com.labes.doe.repository.UserRepository;
-import com.labes.doe.service.UserService;
+import com.labes.doe.repository.user.UserRepository;
+import com.labes.doe.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

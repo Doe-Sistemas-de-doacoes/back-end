@@ -1,4 +1,4 @@
-package com.labes.doe.service;
+package com.labes.doe.service.user;
 
 import com.labes.doe.dto.user.CreateNewUserDTO;
 import com.labes.doe.dto.user.UpdateUserDTO;

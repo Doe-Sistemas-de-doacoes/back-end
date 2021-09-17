@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
+import org.springframework.data.r2dbc.config.EnableR2dbcAuditing;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 @Configuration
 @EnableR2dbcRepositories
+@EnableR2dbcAuditing
 public class ApplicationConfig extends AbstractR2dbcConfiguration {
 
     @Bean
@@ -28,7 +30,7 @@ public class ApplicationConfig extends AbstractR2dbcConfiguration {
         options.put("lock_timeout", "10s");
 
         PostgresqlConnectionFactory connectionFactory = new PostgresqlConnectionFactory(PostgresqlConnectionConfiguration.builder()
-                .host("localhost")
+                .host("192.168.0.107")
                 .port(5432)  // optional, defaults to 5432
                 .username("postgres")
                 .password("senha123")

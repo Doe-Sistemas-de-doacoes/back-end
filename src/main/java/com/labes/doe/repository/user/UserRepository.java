@@ -1,4 +1,4 @@
-package com.labes.doe.repository;
+package com.labes.doe.repository.user;
 
 import com.labes.doe.model.user.User;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

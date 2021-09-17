@@ -1,14 +1,13 @@
-package com.labes.doe.service;
+package com.labes.doe.service.donation;
 
 import com.labes.doe.dto.donation.DonationDTO;
 import com.labes.doe.mapper.donation.DonationMapper;
 import com.labes.doe.model.donation.Donation;
-import com.labes.doe.repository.DonationRepository;
-import com.labes.doe.service.impl.DonationServiceImpl;
+import com.labes.doe.repository.donation.DonationRepository;
+import com.labes.doe.service.donation.impl.DonationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
