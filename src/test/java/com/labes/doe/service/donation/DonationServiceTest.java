@@ -11,66 +11,62 @@ import com.labes.doe.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static com.labes.doe.service.user.UserServiceTest.getMonoUserDTO;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class DonationServiceTest {
 
-    DonationService service;
+    @InjectMocks
+    DonationServiceImpl service;
 
-    @MockBean
+    @Mock
     DonationRepository repository;
 
-    @MockBean
+    @Mock
     UserService userService;
 
-    @MockBean
+    @Mock
     DonationMapper mapper;
-
-    @BeforeEach
-    public void setUp(){
-        service = new DonationServiceImpl(repository,userService, mapper);
-    }
 
     @Test
     public void findDonations(){
-
         when(repository.findAll()).thenReturn(Flux.just(getDonation(1),getDonation(2)));
         when(mapper.toDto(any())).thenReturn( getDonationDTO(1) );
 
-        Flux<DonationDTO> donations = service.findAllDonation();
-
-        donations
+        service.findAllDonation()
             .as(StepVerifier::create)
             .expectNextCount(2)
             .verifyComplete();
 
+        verify(repository, times(1)).findAll();
     }
 
     @Test
     public void saveDonation(){
+
+        CreateNewDonationDTO body = new CreateNewDonationDTO(1,1,"teste", false);
 
         when(userService.getUserById(any(Integer.class))).thenReturn( getMonoUserDTO() );
         when(repository.save( any(Donation.class) ) ).thenReturn( Mono.just( getDonation(1)) );
         when(mapper.toEntity(any())).thenReturn( getDonation(1) );
         when(mapper.toDto(any())).thenReturn( getDonationDTO(1) );
 
-        Mono<DonationDTO> donation = service
-                .saveDonation( new CreateNewDonationDTO(1,1,"teste"));
+        service
+            .saveDonation( body )
+            .as(StepVerifier::create)
+            .expectNextCount(1)
+            .verifyComplete();
 
-        donation
-                .as(StepVerifier::create)
-                .expectNextCount(1)
-                .verifyComplete();
+        verify(repository, times(1)).save( any(Donation.class)  );
 
     }
 
@@ -81,13 +77,14 @@ public class DonationServiceTest {
         when(repository.save( any(Donation.class) ) ).thenReturn( Mono.just( getDonation(1)) );
         when(mapper.toDto(any())).thenReturn( getDonationDTO(1) );
 
-        Mono<DonationDTO> donation = service
-                .updateDonation( 1, new PatchDonationDTO(1,"teste"));
+        service
+            .updateDonation( 1, new PatchDonationDTO(1,"teste"))
+            .as(StepVerifier::create)
+            .expectNextCount(1)
+            .verifyComplete();
 
-        donation
-                .as(StepVerifier::create)
-                .expectNextCount(1)
-                .verifyComplete();
+        verify(repository, times(1)).findById( any(Integer.class) );
+        verify(repository, times(1)).save( any(Donation.class) );
     }
 
     @Test

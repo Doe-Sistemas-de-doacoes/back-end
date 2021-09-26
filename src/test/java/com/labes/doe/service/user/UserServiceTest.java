@@ -10,53 +10,45 @@ import com.labes.doe.service.user.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
-    UserService service;
+    @InjectMocks
+    UserServiceImpl service;
 
-    @MockBean
+    @Mock
     UserRepository repository;
 
-    @MockBean
+    @Mock
     UserMapper mapper;
-
-
-
-    @BeforeEach
-    public void setUp(){
-        service = new UserServiceImpl(repository, mapper);
-    }
 
     @Test
     public void shouldReturnUserById(){
 
-        final int id = 1;
-        Mono<User> user = getMonoUser();
-        UserDTO userDTO = getUserDTO();
+        when(repository.findById(1)).thenReturn(getMonoUser());
+        when(mapper.toDto(any())).thenReturn(getUserDTO());
 
-        when(repository.findById(id)).thenReturn(user);
+        service.getUserById(1)
+            .as(StepVerifier::create)
+            .expectNextMatches( u ->
+                u.getId().equals(1) &&
+                u.getUser().equals("Fulano5000") &&
+                u.getName().equals("fulano")
+            )
+            .verifyComplete();
 
-        when(mapper.toDto(any())).thenReturn(userDTO);
-
-        service.getUserById(id)
-                .as(StepVerifier::create)
-                .expectNextMatches( u ->
-                        u.getId().equals(id) &&
-                        u.getUser().equals("Fulano5000") &&
-                        u.getName().equals("fulano")
-                )
-                .verifyComplete();
-
+        verify(repository).findById( any(Integer.class) );
     }
 
     @Test
@@ -69,9 +61,9 @@ public class UserServiceTest {
         when(mapper.toDto( any() ) ).thenReturn( getUserDTO() );
 
         service.saveUser( createNewUserDTO )
-                .as(StepVerifier::create)
-                .expectNextCount(1)
-                .verifyComplete();
+            .as(StepVerifier::create)
+            .expectNextCount(1)
+            .verifyComplete();
 
         verify(repository).save(userEntity);
 
@@ -94,6 +86,7 @@ public class UserServiceTest {
                 .expectNextCount(1)
                 .verifyComplete();
 
+        verify(repository).findById(id);
         verify(repository).save(userEntity);
     }
 
