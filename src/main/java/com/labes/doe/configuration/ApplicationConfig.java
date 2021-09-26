@@ -23,6 +23,21 @@ import java.util.Map;
 @EnableR2dbcAuditing
 public class ApplicationConfig extends AbstractR2dbcConfiguration {
 
+    @Value("${service.database.host}")
+    private String host;
+
+    @Value("${service.database.port}")
+    private Integer port;
+
+    @Value("${service.database.username}")
+    private String username;
+
+    @Value("${service.database.password}")
+    private String password;
+
+    @Value("${service.database.database}")
+    private String database;
+
     @Bean
     @Override
     public ConnectionFactory connectionFactory() {
@@ -30,15 +45,14 @@ public class ApplicationConfig extends AbstractR2dbcConfiguration {
         options.put("lock_timeout", "10s");
 
         PostgresqlConnectionFactory connectionFactory = new PostgresqlConnectionFactory(PostgresqlConnectionConfiguration.builder()
-                .host("192.168.0.107")
-                .port(5432)  // optional, defaults to 5432
-                .username("postgres")
-                .password("senha123")
-                .database("doe")// optional
-                .options(options) // optional
+                .host(host)
+                .port(port)
+                .username(username)
+                .password(password)
+                .database(database)
+                .options(options)
                 .build());
 
-       // connectionFactory.create();
         return connectionFactory;
     }
 }
