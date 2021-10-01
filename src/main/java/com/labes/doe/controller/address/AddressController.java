@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.labes.doe.dto.address.AddressDTO;
 import com.labes.doe.dto.address.CreateNewAddressDTO;
-import com.labes.doe.dto.address.PatchAddressDTO;
+import com.labes.doe.dto.address.PutAddressDTO;
 import com.labes.doe.service.address.AddressService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,9 +30,9 @@ public class AddressController {
         return service.saveAddress(body);
     }
 
-    @PatchMapping("/{addressId}")
+    @PutMapping("/{addressId}")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<AddressDTO> updateAddress(@PathVariable Integer addressId, @RequestBody PatchAddressDTO body){
+    public Mono<AddressDTO> updateAddress(@PathVariable Integer addressId, @RequestBody PutAddressDTO body){
         return service.updateAddress(addressId, body);
     }
 

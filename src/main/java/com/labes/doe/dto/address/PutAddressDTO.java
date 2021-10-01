@@ -7,8 +7,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class PatchAddressDTO {
-	
+public class PutAddressDTO {
 	private String  neighborhood;
 	private String  city;
 	private String  state;

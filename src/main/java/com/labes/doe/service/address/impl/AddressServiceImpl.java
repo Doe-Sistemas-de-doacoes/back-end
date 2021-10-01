@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.labes.doe.dto.address.AddressDTO;
 import com.labes.doe.dto.address.CreateNewAddressDTO;
-import com.labes.doe.dto.address.PatchAddressDTO;
+import com.labes.doe.dto.address.PutAddressDTO;
 import com.labes.doe.mapper.address.AddressMapper;
 import com.labes.doe.model.address.Address;
 import com.labes.doe.repository.address.AddressRepository;
@@ -33,7 +33,7 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public Mono<AddressDTO> updateAddress(Integer addressId, PatchAddressDTO body) {
+	public Mono<AddressDTO> updateAddress(Integer addressId, PutAddressDTO body) {
 		return repository.findById(addressId)
 				.flatMap(Address -> {
 					Address.setNeighborhood( body.getNeighborhood() );

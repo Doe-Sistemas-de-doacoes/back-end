@@ -12,8 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AddressDTO {
-
-	private Integer addressId;
+	private Integer id;
 	private String  neighborhood;
 	private String  city;
 	private String  state;
@@ -21,5 +20,4 @@ public class AddressDTO {
 	private String  street;
 	private Integer regionId;
 	private Integer userId;
-	
 }
