@@ -1,4 +1,4 @@
-package com.labes.doe.model;
+package com.labes.doe.model.address;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -32,7 +32,7 @@ public class Address {
     @Column("rua_avenida")
     private String street;
 
-    @Column("codigo_usuario")
-    private Integer userId;
+    @Column("codigo_regiao")
+    private Integer regionId;
 
 }
