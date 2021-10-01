@@ -35,4 +35,7 @@ public class Address {
     @Column("codigo_regiao")
     private Integer regionId;
 
+    @Column("codigo_usuario")
+    private Integer userId;
+
 }
