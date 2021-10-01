@@ -20,5 +20,6 @@ public class AddressDTO {
 	private Integer number;
 	private String  street;
 	private Integer regionId;
+	private Integer userId;
 	
 }
