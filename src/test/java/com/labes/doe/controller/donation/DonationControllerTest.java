@@ -1,6 +1,7 @@
 package com.labes.doe.controller.donation;
 
 import com.labes.doe.dto.donation.CreateNewDonationDTO;
+import com.labes.doe.dto.donation.DonationDTO;
 import com.labes.doe.dto.donation.PatchDonationDTO;
 import com.labes.doe.model.donation.enumerations.DonationType;
 import com.labes.doe.service.donation.DonationService;
@@ -17,7 +18,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static com.labes.doe.model.donation.enumerations.DonationType.ROUPA;
 import static com.labes.doe.service.donation.DonationServiceTest.getDonationDTO;
+import static java.time.LocalDateTime.now;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -45,14 +48,16 @@ public class DonationControllerTest {
                 .exchange();
 
         response.expectStatus()
-                .isOk();
+                .isOk()
+                .expectBodyList(DonationDTO.class)
+                .hasSize(2);
     }
 
     @Test
     @DisplayName("should create new donation")
     public void createDonation(){
 
-        CreateNewDonationDTO body = new CreateNewDonationDTO(1,1,"teste");
+        CreateNewDonationDTO body = new CreateNewDonationDTO(1, ROUPA,"teste", false, now());
 
         given( service.saveDonation( any(CreateNewDonationDTO.class) ) )
                 .willReturn( Mono.just( getDonationDTO(1) ) );
@@ -71,7 +76,7 @@ public class DonationControllerTest {
     @DisplayName("should patch donation")
     public void patchDonation(){
 
-        PatchDonationDTO body = new PatchDonationDTO(1,"teste");
+        PatchDonationDTO body = new PatchDonationDTO(ROUPA,"teste");
 
         given( service.updateDonation( any(Integer.class), any(PatchDonationDTO.class) ) )
                 .willReturn( Mono.just( getDonationDTO(1) ) );
@@ -89,7 +94,7 @@ public class DonationControllerTest {
     @DisplayName("should delete donation")
     public void deleteDonation(){
 
-        PatchDonationDTO body = new PatchDonationDTO(1,"teste");
+        PatchDonationDTO body = new PatchDonationDTO(ROUPA,"teste");
 
         given( service.deleteDonation( any(Integer.class) ) )
                 .willReturn( Mono.empty() );

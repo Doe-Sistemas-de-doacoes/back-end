@@ -5,11 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @Getter
 @Setter
 public class CreateNewDonationDTO {
-    private Integer userId;
-    private Integer type;
+    private Integer donorId;
+    private DonationType typeOfDonation;
     private String description;
+    private Boolean isPickUpAtHome;
+    private LocalDateTime datetimeOfCollection;
+
 }

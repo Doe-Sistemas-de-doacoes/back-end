@@ -1,8 +1,6 @@
 package com.labes.doe.controller.donation;
 
-import com.labes.doe.dto.donation.CreateNewDonationDTO;
-import com.labes.doe.dto.donation.DonationDTO;
-import com.labes.doe.dto.donation.PatchDonationDTO;
+import com.labes.doe.dto.donation.*;
 import com.labes.doe.service.donation.DonationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,6 +36,24 @@ public class DonationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> deleteDonation(@PathVariable Integer id){
         return service.deleteDonation(id);
+    }
+
+    @PatchMapping("/receiveDonation")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> receiveDonation(@RequestBody ReceiveDonationDTO body){
+        return service.receiveDonation(body);
+    }
+
+    @PatchMapping("/deliveryStatus")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> updateDeliveryStatus(@RequestBody PatchStatusDonationDTO body){
+        return service.updateDeliveryStatus(body);
+    }
+
+    @PatchMapping("/collectionStatus")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> updateCollectionStatus(@RequestBody PatchStatusDonationDTO body){
+        return service.updateCollectionStatus(body);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.labes.doe.dto.donation;
 
+import com.labes.doe.model.donation.enumerations.DonationType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PatchDonationDTO {
-    private Integer type;
+    private DonationType typeOfDonation;
     private String description;
 }
