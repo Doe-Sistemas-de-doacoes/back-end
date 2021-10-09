@@ -1,5 +1,7 @@
 package com.labes.doe.service.address.impl;
 
+import com.labes.doe.exception.NotFoundException;
+import com.labes.doe.util.MessageUtil;
 import org.springframework.stereotype.Service;
 
 import com.labes.doe.dto.address.AddressDTO;
@@ -28,21 +30,22 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public Mono<AddressDTO> saveAddress( CreateNewAddressDTO body ) {
-		Address addressEntity = mapper.toEntity( body );
-		return repository.save( addressEntity ).map( mapper::toDto );
+		return Mono.just(body)
+				.map(mapper::toEntity)
+				.flatMap(repository::save)
+				.map( mapper::toDto );
 	}
 
 	@Override
 	public Mono<AddressDTO> updateAddress(Integer addressId, PutAddressDTO body) {
-		return repository.findById(addressId)
-				.flatMap(Address -> {
+		return getAddress(addressId)
+			.flatMap(Address -> {
 					Address.setNeighborhood( body.getNeighborhood() );
 					Address.setCity( body.getCity() );
 					Address.setState( body.getState() );
 					Address.setNumber( body.getNumber() );
 					Address.setStreet( body.getStreet() );
 					Address.setRegionId( body.getRegionId() );
-					
 					return repository.save( Address );
 				})
 				.map(mapper::toDto);
@@ -50,6 +53,12 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public Mono<Void> deleteAddress(Integer addressId) {
-		return repository.deleteById(addressId);
+		return getAddress(addressId)
+				.flatMap(repository::delete);
+	}
+
+	private Mono<Address> getAddress(Integer id) {
+		return repository.findById(id)
+				.switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.ADDRESS_NOT_FOUND)));
 	}
 }

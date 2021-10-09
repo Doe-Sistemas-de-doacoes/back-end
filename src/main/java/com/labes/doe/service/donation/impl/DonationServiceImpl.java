@@ -1,6 +1,7 @@
 package com.labes.doe.service.donation.impl;
 
 import com.labes.doe.dto.donation.*;
+import com.labes.doe.exception.NotFoundException;
 import com.labes.doe.mapper.donation.DonationMapper;
 import com.labes.doe.mapper.user.UserMapper;
 import com.labes.doe.model.donation.Donation;
@@ -8,13 +9,11 @@ import com.labes.doe.model.donation.enumerations.DonationStatus;
 import com.labes.doe.repository.donation.DonationRepository;
 import com.labes.doe.service.donation.DonationService;
 import com.labes.doe.service.user.UserService;
+import com.labes.doe.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -23,26 +22,29 @@ public class DonationServiceImpl implements DonationService {
     private final DonationRepository repository;
     private final UserService userService;
     private final DonationMapper mapper;
-    private final UserMapper userMapper;
 
     @Override
     public Flux<DonationDTO> findAllDonation() {
         return repository
-            .findByStatusCollectionAndReceiverIdNull(DonationStatus.FINALIZADO)
-            .map( mapper::toDto );
+                .findByStatusCollectionAndReceiverIdNull(DonationStatus.FINALIZADO)
+                .map( mapper::toDto );
     }
 
     @Override
     public Mono<DonationDTO> saveDonation(CreateNewDonationDTO body) {
-        userService.getUserById(body.getDonorId()); //valida se o doador existe
-        Donation donation = mapper.toEntity(body);
-        donation.setStatusCollection(DonationStatus.PENDENTE);
-        return repository.save(donation).map(mapper::toDto);
+        return userService.getUserById(body.getDonorId())
+                .onErrorMap( unesed -> new NotFoundException(MessageUtil.DONOR_NOT_FOUND) )
+                .map(unused -> mapper.toEntity(body))
+                .flatMap(donation -> {
+                    donation.setStatusCollection(DonationStatus.PENDENTE);
+                    return repository.save(donation);
+                })
+                .map(mapper::toDto);
     }
 
     @Override
     public Mono<DonationDTO> updateDonation(Integer id, PatchDonationDTO body) {
-        return repository.findById(id)
+        return getDonation(id)
                 .flatMap(donation -> {
                     donation.setTypeOfDonation(body.getTypeOfDonation());
                     donation.setDescription(body.getDescription());
@@ -53,54 +55,51 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public Mono<Void> deleteDonation(Integer id) {
-        return repository.deleteById(id);
+        return getDonation(id)
+                .flatMap(repository::delete);
     }
 
     @Override
     public Mono<Void> receiveDonation(ReceiveDonationDTO body) {
-        userService.getUserById(body.getReceiverId()); //valida se o doador existe
-
-        body.getDonations().forEach( id -> {
-            repository.findById(id)
-                    .flatMap(donation -> {
-                        donation.setReceiverId(body.getReceiverId());
-                        donation.setStatusDelivery(DonationStatus.PENDENTE);
-                        donation.setDatetimeOfDelivery(body.getDatetimeOfDelivery());
-                        return repository.save(donation);
-                    })
-                    .subscribe();
-        });
-
-        return Mono.empty();
+        return userService.getUserById( body.getReceiverId() )
+                .onErrorMap( unesed -> new NotFoundException(MessageUtil.RECEIVE_NOT_FOUND) )
+                .map( unesed -> Flux.fromIterable(body.getDonations()) )
+                .flatMap(repository::findById)
+                .switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.DONATION_NOT_FOUND)))
+                .flatMap(donation -> {
+                    donation.setReceiverId(body.getReceiverId());
+                    donation.setStatusDelivery(DonationStatus.PENDENTE);
+                    donation.setDatetimeOfDelivery(body.getDatetimeOfDelivery());
+                    return repository.save(donation);
+                })
+                .then();
     }
 
     @Override
     public Mono<Void> updateDeliveryStatus(PatchStatusDonationDTO body) {
-
-        body.getDonations().forEach( id -> {
-           repository.findById(id)
+        return Flux.fromIterable(body.getDonations())
+            .flatMap(this::getDonation)
             .flatMap(donation -> {
                 donation.setStatusDelivery(DonationStatus.FINALIZADO);
                 return repository.save(donation);
             })
-            .subscribe();
-        });
-
-        return Mono.empty();
+            .then();
     }
 
     @Override
     public Mono<Void> updateCollectionStatus(PatchStatusDonationDTO body) {
-        body.getDonations().forEach( id -> {
-            repository.findById(id)
-            .flatMap(donation -> {
-                donation.setStatusCollection(DonationStatus.FINALIZADO);
-                return repository.save(donation);
-            })
-            .subscribe();
-        });
+        return Flux.fromIterable(body.getDonations())
+                .flatMap(this::getDonation)
+                .flatMap(donation -> {
+                    donation.setStatusCollection(DonationStatus.FINALIZADO);
+                    return repository.save(donation);
+                })
+                .then();
+    }
 
-        return Mono.empty();
+    private Mono<Donation> getDonation(Integer id){
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.DONATION_NOT_FOUND)));
     }
 
 }
