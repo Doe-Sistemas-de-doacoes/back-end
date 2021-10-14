@@ -10,16 +10,16 @@ import com.labes.doe.repository.user.UserRepository;
 import com.labes.doe.service.user.UserService;
 import com.labes.doe.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
-
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserRepository repository;
     private final UserMapper mapper;
 
@@ -34,6 +34,10 @@ public class UserServiceImpl implements UserService {
     public Mono<UserDTO> saveUser(CreateNewUserDTO body) {
         return Mono.just(body)
                 .map(mapper::toEntity)
+                .map(user -> {
+                    user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+                    return user;
+                })
                 .flatMap(repository::save)
                 .map(mapper::toDto);
     }
