@@ -63,9 +63,8 @@ public class DonationServiceImpl implements DonationService {
     public Mono<Void> receiveDonation(ReceiveDonationDTO body) {
         return userService.getUserById( body.getReceiverId() )
                 .onErrorMap( unesed -> new NotFoundException(MessageUtil.RECEIVE_NOT_FOUND) )
-                .map( unesed -> Flux.fromIterable(body.getDonations()) )
-                .flatMap(repository::findById)
-                .switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.DONATION_NOT_FOUND)))
+                .thenMany( Flux.fromIterable( body.getDonations()) )
+                .flatMap(this::getDonation)
                 .flatMap(donation -> {
                     donation.setReceiverId(body.getReceiverId());
                     donation.setStatusDelivery(DonationStatus.PENDENTE);
