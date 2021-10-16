@@ -4,6 +4,7 @@ import com.labes.doe.dto.user.CreateNewUserDTO;
 import com.labes.doe.dto.user.UserDTO;
 import com.labes.doe.model.user.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 

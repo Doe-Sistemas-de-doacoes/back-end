@@ -5,6 +5,7 @@ import com.labes.doe.dto.user.UpdateUserDTO;
 import com.labes.doe.dto.user.UserDTO;
 import com.labes.doe.exception.NotFoundException;
 import com.labes.doe.mapper.user.UserMapper;
+import com.labes.doe.model.profile.Profile;
 import com.labes.doe.model.user.User;
 import com.labes.doe.repository.user.UserRepository;
 import com.labes.doe.service.user.UserService;
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService {
         return Mono.just(body)
                 .map(mapper::toEntity)
                 .map(user -> {
+                    user.setProfile(Profile.CLIE.getId());
                     user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
                     return user;
                 })
