@@ -7,4 +7,5 @@ import reactor.core.publisher.Flux;
 
 public interface DonationRepository extends ReactiveCrudRepository<Donation, Integer> {
     Flux<Donation> findByStatusCollectionAndReceiverIdNull(DonationStatus statusCollection );
+    Flux<Donation> findByStatusDelivery(DonationStatus statusDelivery);
 }
