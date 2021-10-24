@@ -31,6 +31,20 @@ public class DonationServiceImpl implements DonationService {
     }
 
     @Override
+    public Flux<DonationDTO> findAllDonationToReceive() {
+        return repository
+                .findByStatusCollectionAndReceiverIdNull(DonationStatus.PENDENTE)
+                .map( mapper::toDto );
+    }
+
+    @Override
+    public Flux<DonationDTO> findAllDonationToDelivery() {
+        return repository
+                .findByStatusDelivery(DonationStatus.PENDENTE)
+                .map( mapper::toDto );
+    }
+
+    @Override
     public Mono<DonationDTO> saveDonation(CreateNewDonationDTO body) {
         return userService.getUserById(body.getDonorId())
                 .onErrorMap( unesed -> new NotFoundException(MessageUtil.DONOR_NOT_FOUND) )

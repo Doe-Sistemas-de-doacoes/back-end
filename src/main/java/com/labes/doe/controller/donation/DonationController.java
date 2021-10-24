@@ -20,6 +20,17 @@ public class DonationController {
         return service.findAllDonation();
     }
 
+
+    @GetMapping( "/findAllDonationToReceive" )
+    public Flux<DonationDTO> findAllDonationToReceive(){
+        return service.findAllDonationToReceive();
+    }
+
+    @GetMapping( "/findAllDonationToDelivery" )
+    public Flux<DonationDTO> findAllDonationToDelivery(){
+        return service.findAllDonationToDelivery();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<DonationDTO> saveDonation(@RequestBody CreateNewDonationDTO body){
