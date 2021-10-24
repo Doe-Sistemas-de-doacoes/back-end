@@ -1,9 +1,10 @@
 package com.labes.doe.controller.user;
 
-import com.labes.doe.dto.user.CreateNewUserDTO;
-import com.labes.doe.dto.user.UpdateUserDTO;
-import com.labes.doe.dto.user.UserDTO;
-import com.labes.doe.service.user.UserService;
+import com.labes.doe.controller.UserController;
+import com.labes.doe.dto.CreateNewUserDTO;
+import com.labes.doe.dto.UpdateUserDTO;
+import com.labes.doe.dto.UserDTO;
+import com.labes.doe.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

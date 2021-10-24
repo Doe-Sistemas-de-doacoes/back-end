@@ -1,16 +1,16 @@
 package com.labes.doe.service.donation;
 
-import com.labes.doe.dto.donation.CreateNewDonationDTO;
-import com.labes.doe.dto.donation.DonationDTO;
-import com.labes.doe.dto.donation.PatchDonationDTO;
-import com.labes.doe.dto.user.UserDTO;
-import com.labes.doe.mapper.donation.DonationMapper;
-import com.labes.doe.mapper.user.UserMapper;
-import com.labes.doe.model.donation.Donation;
-import com.labes.doe.model.user.User;
-import com.labes.doe.repository.donation.DonationRepository;
-import com.labes.doe.service.donation.impl.DonationServiceImpl;
-import com.labes.doe.service.user.UserService;
+import com.labes.doe.dto.CreateNewDonationDTO;
+import com.labes.doe.dto.DonationDTO;
+import com.labes.doe.dto.PatchDonationDTO;
+import com.labes.doe.dto.UserDTO;
+import com.labes.doe.mapper.DonationMapper;
+import com.labes.doe.mapper.UserMapper;
+import com.labes.doe.model.Donation;
+import com.labes.doe.model.User;
+import com.labes.doe.repository.DonationRepository;
+import com.labes.doe.service.impl.DonationServiceImpl;
+import com.labes.doe.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

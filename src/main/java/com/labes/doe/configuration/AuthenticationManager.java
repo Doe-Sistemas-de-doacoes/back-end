@@ -1,12 +1,11 @@
 package com.labes.doe.configuration;
 
-import com.labes.doe.repository.user.UserRepository;
+import com.labes.doe.repository.UserRepository;
 import com.labes.doe.service.security.JWTUtil;
-import com.labes.doe.service.security.ReactiveUserDetailsServiceImpl;
+import com.labes.doe.service.security.impl.ReactiveUserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;

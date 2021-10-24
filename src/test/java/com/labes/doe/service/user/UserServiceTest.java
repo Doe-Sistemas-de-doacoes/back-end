@@ -1,20 +1,17 @@
 package com.labes.doe.service.user;
 
-import com.labes.doe.dto.user.CreateNewUserDTO;
-import com.labes.doe.dto.user.UpdateUserDTO;
-import com.labes.doe.dto.user.UserDTO;
-import com.labes.doe.mapper.user.UserMapper;
-import com.labes.doe.model.user.User;
-import com.labes.doe.repository.user.UserRepository;
-import com.labes.doe.service.user.impl.UserServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
+import com.labes.doe.dto.CreateNewUserDTO;
+import com.labes.doe.dto.UpdateUserDTO;
+import com.labes.doe.dto.UserDTO;
+import com.labes.doe.mapper.UserMapper;
+import com.labes.doe.model.User;
+import com.labes.doe.repository.UserRepository;
+import com.labes.doe.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 

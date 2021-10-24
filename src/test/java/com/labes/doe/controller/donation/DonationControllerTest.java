@@ -1,9 +1,10 @@
 package com.labes.doe.controller.donation;
 
-import com.labes.doe.dto.donation.CreateNewDonationDTO;
-import com.labes.doe.dto.donation.DonationDTO;
-import com.labes.doe.dto.donation.PatchDonationDTO;
-import com.labes.doe.service.donation.DonationService;
+import com.labes.doe.controller.DonationController;
+import com.labes.doe.dto.CreateNewDonationDTO;
+import com.labes.doe.dto.DonationDTO;
+import com.labes.doe.dto.PatchDonationDTO;
+import com.labes.doe.service.DonationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
