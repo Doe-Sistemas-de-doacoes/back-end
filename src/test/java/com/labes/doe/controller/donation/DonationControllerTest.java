@@ -3,7 +3,6 @@ package com.labes.doe.controller.donation;
 import com.labes.doe.dto.donation.CreateNewDonationDTO;
 import com.labes.doe.dto.donation.DonationDTO;
 import com.labes.doe.dto.donation.PatchDonationDTO;
-import com.labes.doe.model.donation.enumerations.DonationType;
 import com.labes.doe.service.donation.DonationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.labes.doe.model.donation.enumerations.DonationType.ROUPA;
+import static com.labes.doe.model.enumeration.DonationType.ROUPA;
 import static com.labes.doe.service.donation.DonationServiceTest.getDonationDTO;
 import static java.time.LocalDateTime.now;
 import static org.mockito.ArgumentMatchers.any;

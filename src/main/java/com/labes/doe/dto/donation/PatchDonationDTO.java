@@ -1,6 +1,6 @@
 package com.labes.doe.dto.donation;
 
-import com.labes.doe.model.donation.enumerations.DonationType;
+import com.labes.doe.model.enumeration.DonationType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

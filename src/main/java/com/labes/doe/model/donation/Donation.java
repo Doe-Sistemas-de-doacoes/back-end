@@ -1,17 +1,15 @@
 package com.labes.doe.model.donation;
 
-import com.labes.doe.model.donation.enumerations.DonationStatus;
-import com.labes.doe.model.donation.enumerations.DonationType;
+import com.labes.doe.model.enumeration.DonationStatus;
+import com.labes.doe.model.enumeration.DonationType;
 import com.labes.doe.model.user.User;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Builder
 @NoArgsConstructor

@@ -1,6 +1,6 @@
 package com.labes.doe.dto.user;
 
-import com.labes.doe.model.profile.Profile;
+import com.labes.doe.model.enumeration.Profile;
 import lombok.*;
 
 @Builder

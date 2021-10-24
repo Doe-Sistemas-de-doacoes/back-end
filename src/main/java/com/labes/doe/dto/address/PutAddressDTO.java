@@ -1,5 +1,6 @@
 package com.labes.doe.dto.address;
 
+import com.labes.doe.model.enumeration.Region;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,5 +14,5 @@ public class PutAddressDTO {
 	private String  state;
 	private Integer number;
 	private String street;
-	private Integer regionId;
+	private Region region;
 }

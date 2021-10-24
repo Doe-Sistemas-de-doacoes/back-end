@@ -5,7 +5,7 @@ import com.labes.doe.dto.user.UpdateUserDTO;
 import com.labes.doe.dto.user.UserDTO;
 import com.labes.doe.exception.NotFoundException;
 import com.labes.doe.mapper.user.UserMapper;
-import com.labes.doe.model.profile.Profile;
+import com.labes.doe.model.enumeration.Profile;
 import com.labes.doe.model.user.User;
 import com.labes.doe.repository.user.UserRepository;
 import com.labes.doe.service.user.UserService;

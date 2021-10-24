@@ -1,4 +1,4 @@
-package com.labes.doe.model.donation.enumerations;
+package com.labes.doe.model.enumeration;
 
 import lombok.Getter;
 

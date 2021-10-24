@@ -20,7 +20,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static com.labes.doe.model.donation.enumerations.DonationType.ROUPA;
+import static com.labes.doe.model.enumeration.DonationType.ROUPA;
 import static com.labes.doe.service.user.UserServiceTest.getMonoUserDTO;
 import static java.time.LocalDateTime.now;
 import static org.mockito.ArgumentMatchers.any;

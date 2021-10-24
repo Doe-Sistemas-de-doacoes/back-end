@@ -1,5 +1,6 @@
 package com.labes.doe.model.address;
 
+import com.labes.doe.model.enumeration.Region;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -32,8 +33,8 @@ public class Address {
     @Column("rua_avenida")
     private String street;
 
-    @Column("codigo_regiao")
-    private Integer regionId;
+    @Column("regiao")
+    private Region region;
 
     @Column("codigo_usuario")
     private Integer userId;

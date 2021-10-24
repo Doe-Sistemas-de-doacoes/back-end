@@ -45,7 +45,7 @@ public class AddressServiceImpl implements AddressService {
 					Address.setState( body.getState() );
 					Address.setNumber( body.getNumber() );
 					Address.setStreet( body.getStreet() );
-					Address.setRegionId( body.getRegionId() );
+					Address.setRegion( body.getRegion() );
 					return repository.save( Address );
 				})
 				.map(mapper::toDto);

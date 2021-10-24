@@ -1,4 +1,4 @@
-package com.labes.doe.model.profile;
+package com.labes.doe.model.enumeration;
 
 import lombok.Getter;
 
@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 @Getter
 public enum Profile {
-    CLIE(1, "ROLE_CLIE"),
-    ADMI(2, "ROLE_ADMI");
+    ADMI(1, "ROLE_ADMI"),
+    CLIE(2, "ROLE_CLIE");
 
     private final int id;
     private final String role;
