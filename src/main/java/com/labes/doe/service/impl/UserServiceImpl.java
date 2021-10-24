@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         return getUser(id)
                 .flatMap(userFind -> {
                     userFind.setName(body.getName());
-                    userFind.setPassword(body.getPassword());
+                    userFind.setPassword(bCryptPasswordEncoder.encode( body.getPassword()));
                     return repository.save(userFind);
                 })
                 .map(mapper::toDto);
