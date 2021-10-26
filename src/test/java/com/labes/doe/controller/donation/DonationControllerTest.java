@@ -2,6 +2,7 @@ package com.labes.doe.controller.donation;
 
 import com.labes.doe.controller.DonationController;
 import com.labes.doe.dto.CreateNewDonationDTO;
+import com.labes.doe.dto.DonationAvailableDTO;
 import com.labes.doe.dto.DonationDTO;
 import com.labes.doe.dto.PatchDonationDTO;
 import com.labes.doe.service.DonationService;
@@ -41,7 +42,8 @@ public class DonationControllerTest {
     @DisplayName("should return list of donations")
     public void listDonations(){
 
-        given( service.findAllDonation() ).willReturn( Flux.just( getDonationDTO(1) ,getDonationDTO(2) ) );
+        given( service.findAllDonationAvailable() )
+                .willReturn( Flux.just( getDonationAvailableDTO(), getDonationAvailableDTO() ) );
 
         WebTestClient.ResponseSpec response = web.get().uri(DONATION_API)
                 .accept(MediaType.APPLICATION_JSON)
@@ -104,5 +106,10 @@ public class DonationControllerTest {
                 .exchange();
 
         response.expectStatus().isNoContent();
+    }
+
+    protected DonationAvailableDTO getDonationAvailableDTO(){
+        return DonationAvailableDTO
+                .builder().build();
     }
 }

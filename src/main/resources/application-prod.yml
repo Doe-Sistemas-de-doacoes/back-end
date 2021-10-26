@@ -1,0 +1,8 @@
+service:
+  database:
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    host: ${DATABASE_HOST}
+    driver: ${DATABASE_DRIVER}
+    port: ${DATABASE_PORT}
+    database: ${DATABASE_DB}

@@ -8,10 +8,12 @@ import com.labes.doe.mapper.UserMapper;
 import com.labes.doe.model.enumeration.Profile;
 import com.labes.doe.model.User;
 import com.labes.doe.repository.UserRepository;
+import com.labes.doe.service.AddressService;
 import com.labes.doe.service.UserService;
 import com.labes.doe.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -20,14 +22,23 @@ import reactor.core.publisher.Mono;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
     private final UserMapper mapper;
+    private final AddressService addressService;
+
 
     @Override
     public Mono<UserDTO> getUserById(Integer id) {
-        return getUser(id)
-                .map(mapper::toDto);
+        return addressService.findAddressByUser(id)
+                .collectList()
+                .flatMap(address -> getUser(id)
+                        .map( user -> {
+                            var userDTO = mapper.toDto(user);
+                            userDTO.setAddress(address);
+                            return userDTO;
+                        })
+                );
     }
 
     @Transactional
@@ -37,7 +48,7 @@ public class UserServiceImpl implements UserService {
                 .map(mapper::toEntity)
                 .map(user -> {
                     user.setProfile(Profile.CLIE.getId());
-                    user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+                    user.setPassword(passwordEncoder.encode(user.getPassword()));
                     return user;
                 })
                 .flatMap(repository::save)
@@ -49,7 +60,7 @@ public class UserServiceImpl implements UserService {
         return getUser(id)
                 .flatMap(userFind -> {
                     userFind.setName(body.getName());
-                    userFind.setPassword(bCryptPasswordEncoder.encode( body.getPassword()));
+                    userFind.setPassword(passwordEncoder.encode( body.getPassword()));
                     return repository.save(userFind);
                 })
                 .map(mapper::toDto);

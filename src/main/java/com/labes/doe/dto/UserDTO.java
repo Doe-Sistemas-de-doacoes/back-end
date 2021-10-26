@@ -3,6 +3,8 @@ package com.labes.doe.dto;
 import com.labes.doe.model.enumeration.Profile;
 import lombok.*;
 
+import java.util.List;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,6 +15,7 @@ public class UserDTO {
     private String user;
     private String name;
     private String profile;
+    private List<AddressDTO> address;
 
     public void setProfile(Integer profile) {
         this.profile = Profile.toEnum(profile).getRole();

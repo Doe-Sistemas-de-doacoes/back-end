@@ -24,6 +24,12 @@ public class AddressServiceImpl implements AddressService {
 	private final AddressMapper     mapper;
 
 	@Override
+	public Flux<AddressDTO> findAddressByUser(Integer userId) {
+		return repository.findByUserId(userId)
+				.map( mapper::toDto );
+	}
+
+	@Override
 	public Flux<AddressDTO> findAllAddress() {
 		return repository.findAll().map( mapper::toDto );
 	}

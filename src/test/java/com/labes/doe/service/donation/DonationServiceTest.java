@@ -51,7 +51,7 @@ public class DonationServiceTest {
         when(userMapper.toEntity(any(UserDTO.class))).thenReturn(User.builder().build());
         when(mapper.toDto(any())).thenReturn( getDonationDTO(1) );
 
-        service.findAllDonation()
+        service.findAllDonationAvailable()
             .as(StepVerifier::create)
             .expectNextCount(2)
             .verifyComplete();

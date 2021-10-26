@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class DonationDTO {
-
     private Integer id;
     private DonationType typeOfDonation;
     private String description;
     private LocalDateTime datetimeOfCollection;
+    private LocalDateTime datetimeOfDelivery;
     private Integer donorId;
-
+    private Integer receiverId;
 }
