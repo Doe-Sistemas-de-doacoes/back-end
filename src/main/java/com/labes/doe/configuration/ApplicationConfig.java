@@ -23,6 +23,12 @@ import java.util.Map;
 @EnableR2dbcAuditing
 public class ApplicationConfig extends AbstractR2dbcConfiguration {
 
+    @Value("${spring.profiles.active}")
+    private String profile;
+
+    @Value("${service.database.url}")
+    private String url;
+
     @Value("${service.database.host}")
     private String host;
 
@@ -41,10 +47,16 @@ public class ApplicationConfig extends AbstractR2dbcConfiguration {
     @Bean
     @Override
     public ConnectionFactory connectionFactory() {
+
+        if(profile.equals("dev")) {
+            url = url.split("postgres")[1];
+            return ConnectionFactories.get("r2dbc:postgresql".concat(url));
+        }
+
         Map<String, String> options = new HashMap<>();
         options.put("lock_timeout", "10s");
 
-        PostgresqlConnectionFactory connectionFactory = new PostgresqlConnectionFactory(PostgresqlConnectionConfiguration.builder()
+        return new PostgresqlConnectionFactory(PostgresqlConnectionConfiguration.builder()
                 .host(host)
                 .port(port)
                 .username(username)
@@ -52,7 +64,5 @@ public class ApplicationConfig extends AbstractR2dbcConfiguration {
                 .database(database)
                 .options(options)
                 .build());
-
-        return connectionFactory;
     }
 }
