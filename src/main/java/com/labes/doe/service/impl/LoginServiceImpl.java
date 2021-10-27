@@ -9,6 +9,7 @@ import com.labes.doe.service.LoginService;
 import com.labes.doe.service.security.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +20,7 @@ public class LoginServiceImpl implements LoginService {
     private final JWTUtil jwtUtil;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder bCryptPasswordEncoder;
 
     public Mono<UserTokenDTO> login(CredentialDTO credential) {
         return userRepository
