@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .csrf().disable()
-              //  .cors().disable()
+                .cors().disable()
                 .authenticationManager(authenticationManager)
                 .securityContextRepository(securityContextRepository)
                 .requestCache().requestCache(NoOpServerRequestCache.getInstance())
@@ -57,12 +57,12 @@ public class SecurityConfig {
 
     }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource(){
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-        return source;
-    }
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource(){
+//        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+//        return source;
+//    }
 
     @Bean
     public PasswordEncoder bCryptPasswordEncoder(){
