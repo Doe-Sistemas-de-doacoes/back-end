@@ -1,6 +1,6 @@
 service:
   database:
-    url: ${DATABASE_URL_MAIN}
+    url: r2dbc:postgresql:${DATABASE_URL}
 
   jwt:
     secret: ${SECRET_TOKEN}
