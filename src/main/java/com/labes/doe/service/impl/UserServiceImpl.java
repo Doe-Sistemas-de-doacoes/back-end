@@ -41,7 +41,6 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
-    @Transactional
     @Override
     public Mono<UserDTO> saveUser(CreateNewUserDTO body) {
         return Mono.just(body)
