@@ -16,6 +16,6 @@ public class DonationDTO {
     private String description;
     private LocalDateTime datetimeOfCollection;
     private LocalDateTime datetimeOfDelivery;
-    private Integer donorId;
-    private Integer receiverId;
+    private UserDTO donor;
+    private UserDTO receiver;
 }

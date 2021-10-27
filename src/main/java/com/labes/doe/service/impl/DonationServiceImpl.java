@@ -21,29 +21,24 @@ public class DonationServiceImpl implements DonationService {
 
     private final DonationRepository donationRepository;
     private final DonationMapper donationMapper;
-
     private final UserService userService;
-    private final AddressService addressService;
 
     @Override
-    public Flux<DonationAvailableDTO> findAllDonationAvailable() {
-        return
-                donationRepository
+    public Flux<DonationDTO> findAllDonationAvailable() {
+        return donationRepository
                 .findByStatusCollectionAndReceiverIdNull(DonationStatus.FINALIZADO)
-                .map(donationMapper::toDto)
                 .flatMap(donation -> Flux.zip(
                         Flux.just(donation),
                         userService.getUserById(donation.getDonorId())
                 ))
                 .map(tuple -> {
                     var donation = tuple.getT1();
-                    var userDTO = tuple.getT2();
+                    var donor = tuple.getT2();
+                    var donationDTO = donationMapper.toDto(donation);
 
-                    return DonationAvailableDTO
-                            .builder()
-                            .donation(donation)
-                            .donor(userDTO)
-                            .build();
+                    donationDTO.setDonor(donor);
+
+                    return donationDTO;
                 });
     }
 
@@ -55,23 +50,24 @@ public class DonationServiceImpl implements DonationService {
     }
 
     @Override
-    public Flux<DonationToDeliveryDTO> findAllDonationToDelivery() {
+    public Flux<DonationDTO> findAllDonationToDelivery() {
         return donationRepository
                 .findByStatusDeliveryAndReceiverIdNotNull(DonationStatus.PENDENTE)
-                .map(donationMapper::toDto)
                 .flatMap(donation -> Flux.zip(
                         Flux.just(donation),
+                        userService.getUserById(donation.getDonorId()),
                         userService.getUserById(donation.getReceiverId())
                 ))
                 .map(tuple -> {
                     var donation = tuple.getT1();
-                    var userDTO = tuple.getT2();
+                    var donor = tuple.getT2();
+                    var receiver = tuple.getT3();
+                    var donationDTO = donationMapper.toDto(donation);
 
-                    return DonationToDeliveryDTO
-                            .builder()
-                            .donation(donation)
-                            .receive(userDTO)
-                            .build();
+                    donationDTO.setDonor(donor);
+                    donationDTO.setReceiver(receiver);
+
+                    return donationDTO;
                 });
     }
 
@@ -141,7 +137,7 @@ public class DonationServiceImpl implements DonationService {
                 .then();
     }
 
-    private Mono<Donation> getDonation(Integer id) {
+    protected Mono<Donation> getDonation(Integer id) {
         return donationRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.DONATION_NOT_FOUND)));
     }

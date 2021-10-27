@@ -16,7 +16,7 @@ public class DonationController {
     private final DonationService service;
 
     @GetMapping
-    public Flux<DonationAvailableDTO> findAllDonationsAvailable(){
+    public Flux<DonationDTO> findAllDonationsAvailable(){
         return service.findAllDonationAvailable();
     }
 
@@ -27,7 +27,7 @@ public class DonationController {
     }
 
     @GetMapping( "/findAllDonationToDelivery" )
-    public Flux<DonationToDeliveryDTO> findAllDonationToDelivery(){
+    public Flux<DonationDTO> findAllDonationToDelivery(){
         return service.findAllDonationToDelivery();
     }
 
