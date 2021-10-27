@@ -1,12 +1,12 @@
 service:
-  database:
-    url: r2dbc:postgresql:${DATABASE_URL}
-
   jwt:
     secret: ${SECRET_TOKEN}
     expiration: ${EXPIRATION_TOKEN}
 
 spring:
+  r2dbc:
+    url: ${DATABASE_URL_MAIN}
+
   flyway:
     url: jdbc:postgresql://${FLYWAY_URL}
     user: ${FLYWAY_USER}
