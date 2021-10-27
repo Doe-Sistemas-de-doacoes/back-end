@@ -48,7 +48,7 @@ public class ApplicationConfig extends AbstractR2dbcConfiguration {
     @Override
     public ConnectionFactory connectionFactory() {
 
-        if(profile.equals("dev")) {
+        if(profile.equals("prod")) {
             url = url.split("postgres")[1];
             return ConnectionFactories.get("r2dbc:postgresql".concat(url));
         }

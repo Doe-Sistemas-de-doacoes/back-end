@@ -20,6 +20,6 @@ spring:
     validate-on-migrate: true
 
   profiles:
-    active: dev
+    active: prod
 
 
