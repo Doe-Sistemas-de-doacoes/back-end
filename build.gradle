@@ -39,4 +39,5 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+	jvmArgs '-verbose:class'
 }

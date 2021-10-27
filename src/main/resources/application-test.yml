@@ -1,7 +1,7 @@
 service:
   jwt:
     secret: fdskfjkdgjhdjfkdskf
-    expiration: 60000
+    expiration: 600000000
 
 spring:
   r2dbc:

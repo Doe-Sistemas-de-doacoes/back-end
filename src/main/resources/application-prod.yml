@@ -13,3 +13,6 @@ spring:
     password: ${FLYWAY_PASSWORD}
     baseline-on-migrate: true
     validate-on-migrate: true
+
+server:
+  port: ${PORT:5000}
