@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "Spring", unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+@Mapper(componentModel = "Spring", config = IgnoreUnmappedMapperConfig.class, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
 public interface UserMapper {
     UserDTO toDto(User user);
     UserTokenDTO toDtoToken(User user);

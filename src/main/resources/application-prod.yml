@@ -1,3 +1,15 @@
 service:
   database:
-    url: ${DATABASE_URL}
+    url: ${DATABASE_URL_MAIN}
+
+  jwt:
+    secret: ${SECRET_TOKEN}
+    expiration: ${EXPIRATION_TOKEN}
+
+spring:
+  flyway:
+    url: jdbc:postgresql://${FLYWAY_URL}
+    user: ${FLYWAY_USER}
+    password: ${FLYWAY_PASSWORD}
+    baseline-on-migrate: true
+    validate-on-migrate: true

@@ -1,0 +1,15 @@
+service:
+  database:
+    url: r2dbc:postgresql://postgres:senha123@192.168.0.106:5432/doe
+
+  jwt:
+    secret: fdskfjkdgjhdjfkdskf
+    expiration: 60000
+
+spring:
+  flyway:
+    url: jdbc:postgresql://192.168.0.106:5432/doe
+    user: postgres
+    password: senha123
+    baseline-on-migrate: true
+    validate-on-migrate: true

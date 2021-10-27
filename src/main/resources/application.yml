@@ -1,25 +1,6 @@
-service:
-  database:
-    username: postgres
-    password: senha123
-    host: 192.168.0.106
-    driver: postgresql
-    port: 5432
-    database: doe
-
-  jwt:
-    secret: ${SECRET_TOKEN}
-    expiration: ${EXPIRATION_TOKEN}
-
 spring:
-  flyway:
-    url: jdbc:${service.database.driver}://${service.database.host}:${service.database.port}/${service.database.database}
-    user: ${service.database.username}
-    password: ${service.database.password}
-    baseline-on-migrate: true
-    validate-on-migrate: true
-
   profiles:
     active: prod
+
 
 

@@ -7,10 +7,8 @@ import com.labes.doe.dto.CreateNewAddressDTO;
 import com.labes.doe.model.Address;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "Spring", unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+@Mapper(componentModel = "Spring", config = IgnoreUnmappedMapperConfig.class, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
 public interface AddressMapper {
-
 	AddressDTO toDto( Address address);
-
 	Address toEntity( CreateNewAddressDTO address );
 }
