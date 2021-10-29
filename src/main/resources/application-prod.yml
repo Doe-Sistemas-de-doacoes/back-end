@@ -5,14 +5,13 @@ service:
 
 spring:
   r2dbc:
-    url: ${DATABASE_URL_MAIN}
+    url: r2dbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DB}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
 
   flyway:
-    url: jdbc:postgresql://${FLYWAY_URL}
-    user: ${FLYWAY_USER}
-    password: ${FLYWAY_PASSWORD}
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DB}
+    user: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
     baseline-on-migrate: true
     validate-on-migrate: true
-
-server:
-  port: ${PORT:5000}
