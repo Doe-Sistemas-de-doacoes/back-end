@@ -19,14 +19,11 @@ import java.util.List;
 @Component
 public class SecurityContextRepository implements ServerSecurityContextRepository {
 
-    private Logger log = LoggerFactory.getLogger(SecurityContextRepository.class);
-
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Override
     public Mono<Void> save(ServerWebExchange exchange, SecurityContext context) {
-        System.out.println( exchange.getRequest().getBody() );
         return Mono.empty();
     }
 
@@ -40,14 +37,13 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
                 .filter(b -> b.startsWith("Bearer "))
                 .map(subs -> subs.substring(7))
                 .flatMap(token ->
-                    Mono.just(
-                        new UsernamePasswordAuthenticationToken (
-                                token,
-                                token,
-                                List.of(
-                                        new SimpleGrantedAuthority(Profile.ADMI.getRole()),
-                                        new SimpleGrantedAuthority(Profile.CLIE.getRole())
-                                )
+                    Mono.just(new UsernamePasswordAuthenticationToken (
+                            token,
+                            token,
+                            List.of(
+                                    new SimpleGrantedAuthority(Profile.ADMI.getRole()),
+                                    new SimpleGrantedAuthority(Profile.CLIE.getRole())
+                            )
                         )
                     )
                 )
