@@ -1,5 +1,6 @@
 package com.labes.doe.mapper;
 
+import com.labes.doe.dto.PutAddressDTO;
 import org.mapstruct.Mapper;
 
 import com.labes.doe.dto.AddressDTO;
@@ -11,4 +12,5 @@ import org.mapstruct.*;
 public interface AddressMapper {
 	AddressDTO toDto( Address address);
 	Address toEntity( CreateNewAddressDTO address );
+	PutAddressDTO toPutAddressDto( AddressDTO addressDTO );
 }
