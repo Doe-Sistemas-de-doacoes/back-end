@@ -17,24 +17,24 @@ public class UserController {
     private final UserService service;
 
     @GetMapping
-    private Mono<UserDTO> getUser(){
+    public Mono<UserDTO> getUser(){
         return service.getUserDTO();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    private Mono<UserDTO> saveUser(@RequestBody CreateNewUserDTO user){
+    public Mono<UserDTO> saveUser(@RequestBody CreateNewUserDTO user){
         return service.saveUser(user);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping()
-    private Mono<Void> deleteUser(){
+    public Mono<Void> deleteUser(){
         return service.deleteUser();
     }
 
     @PutMapping()
-    private Mono<UserDTO> updateUser(@RequestBody UpdateUserDTO user){
+    public Mono<UserDTO> updateUser(@RequestBody UpdateUserDTO user){
         return service.updateUser(user);
     }
 
