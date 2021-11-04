@@ -11,14 +11,14 @@ import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService service;
 
-    @GetMapping("/{id}")
-    private Mono<UserDTO> getUser(@PathVariable Integer id){
-        return service.getUserById(id);
+    @GetMapping
+    private Mono<UserDTO> getUser(){
+        return service.getUserDTO();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -28,14 +28,14 @@ public class UserController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{id}")
-    private Mono<Void> deleteUser(@PathVariable Integer id){
-        return service.deleteUserById(id);
+    @DeleteMapping()
+    private Mono<Void> deleteUser(){
+        return service.deleteUser();
     }
 
-    @PutMapping("/{id}")
-    private Mono<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UpdateUserDTO user){
-        return service.updateUser(id, user);
+    @PutMapping()
+    private Mono<UserDTO> updateUser(@RequestBody UpdateUserDTO user){
+        return service.updateUser(user);
     }
 
 }

@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/donations")
+@RequestMapping("/api/donations")
 public class DonationController {
 
     private final DonationService service;
@@ -20,6 +20,10 @@ public class DonationController {
         return service.findAllDonationAvailable();
     }
 
+    @GetMapping( "/countFinishedDonations" )
+    public Mono<Long> countFinishedDonations(){
+        return service.countFinishedDonations();
+    }
 
     @GetMapping( "/findAllDonationToReceive" )
     public Flux<DonationDTO> findAllDonationToReceive(){
@@ -53,18 +57,6 @@ public class DonationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> receiveDonation(@RequestBody ReceiveDonationDTO body){
         return service.receiveDonation(body);
-    }
-
-    @PatchMapping("/deliveryStatus")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> updateDeliveryStatus(@RequestBody PatchStatusDonationDTO body){
-        return service.updateDeliveryStatus(body);
-    }
-
-    @PatchMapping("/collectionStatus")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> updateCollectionStatus(@RequestBody PatchStatusDonationDTO body){
-        return service.updateCollectionStatus(body);
     }
 
 }

@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/address")
+@RequestMapping("/api/address")
 public class AddressController {
 
 	private final AddressService service;

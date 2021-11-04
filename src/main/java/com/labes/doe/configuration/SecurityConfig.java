@@ -25,7 +25,7 @@ import java.util.Arrays;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_MATCHERS = {"/login", "/users"};
+    private static final String[] PUBLIC_MATCHERS = {"/api/login", "/api/users"};
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -39,8 +39,10 @@ public class SecurityConfig {
                 authorizedExchangeSpec -> authorizedExchangeSpec
                         .pathMatchers(HttpMethod.POST, PUBLIC_MATCHERS)
                         .permitAll()
-                        .anyExchange()
+                        .pathMatchers("/api/**")
                         .authenticated()
+                        .anyExchange()
+                        .permitAll()
                 )
                 .exceptionHandling()
                 .authenticationEntryPoint((response, error) -> Mono.fromRunnable(()->{
