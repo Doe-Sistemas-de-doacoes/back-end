@@ -12,5 +12,4 @@ import java.util.List;
 public class ReceiveDonationDTO {
     private List<Integer> donations = new ArrayList<>();
     private Integer receiverId;
-    private LocalDateTime datetimeOfDelivery;
 }

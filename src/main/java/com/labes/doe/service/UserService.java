@@ -6,8 +6,9 @@ import com.labes.doe.dto.UserDTO;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
+    Mono<UserDTO> getUserDTO();
     Mono<UserDTO> getUserById(Integer id);
     Mono<UserDTO> saveUser(CreateNewUserDTO user);
-    Mono<Void> deleteUserById(Integer id);
-    Mono<UserDTO> updateUser(Integer id, UpdateUserDTO user);
+    Mono<Void> deleteUser();
+    Mono<UserDTO> updateUser(UpdateUserDTO user);
 }

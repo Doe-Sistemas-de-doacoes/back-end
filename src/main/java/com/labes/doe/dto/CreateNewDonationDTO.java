@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class CreateNewDonationDTO {
-    private Integer donorId;
     private DonationType typeOfDonation;
     private String description;
     private Boolean isPickUpAtHome;

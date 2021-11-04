@@ -12,6 +12,5 @@ public interface DonationService {
     Mono<DonationDTO> updateDonation(Integer id, PatchDonationDTO body);
     Mono<Void> deleteDonation(Integer id);
     Mono<Void> receiveDonation(ReceiveDonationDTO body);
-    Mono<Void> updateDeliveryStatus(PatchStatusDonationDTO body);
-    Mono<Void> updateCollectionStatus(PatchStatusDonationDTO body);
+    Mono<Long> countFinishedDonations();
 }

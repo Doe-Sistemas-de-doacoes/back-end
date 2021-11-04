@@ -1,5 +1,6 @@
 package com.labes.doe.service.security.impl;
 
+import com.labes.doe.exception.InvalidUsernamePasswordException;
 import com.labes.doe.model.enumeration.Profile;
 import com.labes.doe.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class ReactiveUserDetailsServiceImpl implements ReactiveUserDetailsServic
     public Mono<UserDetails> findByUsername(String username) {
         return repository
                 .findByUser(username)
-                .switchIfEmpty(Mono.error(new UsernameNotFoundException(username)))
+                .switchIfEmpty(Mono.error(new InvalidUsernamePasswordException()))
                 .map(user -> {
                     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 

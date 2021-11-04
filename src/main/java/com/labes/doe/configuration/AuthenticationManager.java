@@ -1,5 +1,7 @@
 package com.labes.doe.configuration;
 
+import com.labes.doe.exception.InvalidTokenException;
+import com.labes.doe.exception.InvalidUsernamePasswordException;
 import com.labes.doe.repository.UserRepository;
 import com.labes.doe.service.security.JWTUtil;
 import com.labes.doe.service.security.impl.ReactiveUserDetailsServiceImpl;
@@ -19,22 +21,21 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
     private final ReactiveUserDetailsServiceImpl reactiveUserDetailsService;
     private final JWTUtil jwtUtil;
-    private final UserRepository userRepository;
+   // private final UserRepository userRepository;
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         String token = authentication.getCredentials().toString();
         String userName = jwtUtil.getUsernameFromToken(token);
 
-        return Mono.just(authentication.getCredentials().toString())
+        return Mono.just(token)
                 .map(jwtUtil::getUsernameFromToken)
                 .flatMap(reactiveUserDetailsService::findByUsername)
+                .filter(userDetails -> userName.equals(userDetails.getUsername()) && jwtUtil.isTokenValidated(token))
+                .switchIfEmpty(Mono.error(new InvalidTokenException()))
                 .flatMap(userDetails -> {
-                    if(userName.equals(userDetails.getUsername()) && jwtUtil.isTokenValidated(token)) {
-                        return Mono.just(authentication);
-                    } else {
-                        return Mono.just(authentication);
-                    }
+                    jwtUtil.setUserAuthenticated(userDetails);
+                    return Mono.just(authentication);
                 });
     }
 

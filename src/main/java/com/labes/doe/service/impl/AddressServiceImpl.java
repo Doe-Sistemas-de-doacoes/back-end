@@ -63,7 +63,7 @@ public class AddressServiceImpl implements AddressService {
 				.flatMap(repository::delete);
 	}
 
-	private Mono<Address> getAddress(Integer id) {
+	protected Mono<Address> getAddress(Integer id) {
 		return repository.findById(id)
 				.switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.ADDRESS_NOT_FOUND)));
 	}

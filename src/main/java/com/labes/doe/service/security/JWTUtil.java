@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
@@ -21,6 +22,8 @@ public class JWTUtil {
 
     @Value("${service.jwt.expiration}")
     private Long expiration;
+
+    private UserDetails userDetails;
 
     public String generateToken(String username){
         Date now =new Date();
@@ -58,5 +61,12 @@ public class JWTUtil {
 
     public Boolean isTokenValidated(String token) {
         return !isTokenExpired(token);
+    }
+
+    public void setUserAuthenticated(UserDetails userDetails) {
+        this.userDetails = userDetails;
+    }
+    public UserDetails getUserAuthenticated() {
+        return userDetails;
     }
 }

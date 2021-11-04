@@ -2,6 +2,9 @@ package com.labes.doe.dto;
 
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,4 +14,5 @@ public class UpdateUserDTO {
     private String user;
     private String name;
     private String password;
-    private }
+    private List<AddressDTO> address = new ArrayList<>();
+}

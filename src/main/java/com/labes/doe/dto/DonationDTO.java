@@ -15,7 +15,6 @@ public class DonationDTO {
     private DonationType typeOfDonation;
     private String description;
     private LocalDateTime datetimeOfCollection;
-    private LocalDateTime datetimeOfDelivery;
     private UserDTO donor;
     private UserDTO receiver;
 }

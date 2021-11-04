@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Service
 public class DonationServiceImpl implements DonationService {
@@ -73,11 +75,13 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public Mono<DonationDTO> saveDonation(CreateNewDonationDTO body) {
-        return userService.getUserById(body.getDonorId())
+        return userService.getUserDTO()
                 .onErrorMap(unesed -> new NotFoundException(MessageUtil.DONOR_NOT_FOUND))
-                .map(unused -> donationMapper.toEntity(body))
-                .flatMap(donation -> {
+                .flatMap(userDTO -> {
+                    var donation = donationMapper.toEntity(body);
+                    donation.setStatusDelivery(DonationStatus.PENDENTE);
                     donation.setStatusCollection(DonationStatus.FINALIZADO);
+                    donation.setDonorId(userDTO.getId());
                     return donationRepository.save(donation);
                 })
                 .map(donationMapper::toDto);
@@ -108,33 +112,16 @@ public class DonationServiceImpl implements DonationService {
                 .flatMap(this::getDonation)
                 .flatMap(donation -> {
                     donation.setReceiverId(body.getReceiverId());
-                    donation.setStatusDelivery(DonationStatus.PENDENTE);
-                    donation.setDatetimeOfDelivery(body.getDatetimeOfDelivery());
-                    return donationRepository.save(donation);
-                })
-                .then();
-    }
-
-    @Override
-    public Mono<Void> updateDeliveryStatus(PatchStatusDonationDTO body) {
-        return Flux.fromIterable(body.getDonations())
-                .flatMap(this::getDonation)
-                .flatMap(donation -> {
                     donation.setStatusDelivery(DonationStatus.FINALIZADO);
+                    donation.setDatetimeOfDelivery( LocalDateTime.now() );
                     return donationRepository.save(donation);
                 })
                 .then();
     }
 
     @Override
-    public Mono<Void> updateCollectionStatus(PatchStatusDonationDTO body) {
-        return Flux.fromIterable(body.getDonations())
-                .flatMap(this::getDonation)
-                .flatMap(donation -> {
-                    donation.setStatusCollection(DonationStatus.FINALIZADO);
-                    return donationRepository.save(donation);
-                })
-                .then();
+    public Mono<Long> countFinishedDonations() {
+        return donationRepository.countByStatusDeliveryAndReceiverIdNotNull(DonationStatus.FINALIZADO);
     }
 
     protected Mono<Donation> getDonation(Integer id) {
