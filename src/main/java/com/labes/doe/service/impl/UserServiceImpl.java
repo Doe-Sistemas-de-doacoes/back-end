@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static org.apache.logging.log4j.util.Strings.isNotEmpty;
+
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
@@ -91,9 +93,12 @@ public class UserServiceImpl implements UserService {
                 .collectList()
                 .flatMap( addressDTOS -> getUser()
                         .flatMap(user -> {
-                            user.setName(body.getName());
-                            user.setUser(body.getUser());
-                            user.setPassword(passwordEncoder.encode( body.getPassword()));
+                            if( isNotEmpty(body.getName()) ) {
+                                user.setName(body.getName());
+                            }
+                            if( isNotEmpty(body.getPassword()) ) {
+                                user.setPassword(passwordEncoder.encode(body.getPassword()));
+                            }
                             return repository.save(user);
                         })
                         .map(user -> {
