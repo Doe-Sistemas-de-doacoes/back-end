@@ -5,17 +5,34 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.ModCheck;
+
+import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
 @Builder
 @Getter
 @Setter
 public class CreateNewAddressDTO {
-	private String  neighborhood;
-	private String  city;
-	private String  state;
+
+	@NotNull(message = "O bairro é obrigatório.")
+	private String neighborhood;
+
+	@NotNull(message = "A cidade é obrigatória.")
+	private String city;
+
+	@NotNull(message = "O estado é obrigatório.")
+	private String state;
+
+	@NotNull(message = "O número é obrigatório.")
 	private Integer number;
+
+	@NotNull(message = "A rua é obrigatória.")
 	private String street;
+
+	@NotNull(message = "A região é obrigatória.")
 	private Region region;
+
+	@NotNull(message = "O id do usuário é obrigatório.")
 	private Integer userId;
 }

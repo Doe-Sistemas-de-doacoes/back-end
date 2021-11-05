@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
@@ -23,7 +25,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Mono<UserDTO> saveUser(@RequestBody CreateNewUserDTO user){
+    public Mono<UserDTO> saveUser(@RequestBody @Valid CreateNewUserDTO user){
         return service.saveUser(user);
     }
 

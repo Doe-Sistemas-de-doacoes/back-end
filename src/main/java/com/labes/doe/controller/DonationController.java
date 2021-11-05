@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/donations")
@@ -37,7 +39,7 @@ public class DonationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<DonationDTO> saveDonation(@RequestBody CreateNewDonationDTO body){
+    public Mono<DonationDTO> saveDonation(@RequestBody @Valid CreateNewDonationDTO body){
         return service.saveDonation(body);
     }
 
@@ -55,7 +57,7 @@ public class DonationController {
 
     @PatchMapping("/receiveDonation")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> receiveDonation(@RequestBody ReceiveDonationDTO body){
+    public Mono<Void> receiveDonation(@RequestBody @Valid ReceiveDonationDTO body){
         return service.receiveDonation(body);
     }
 

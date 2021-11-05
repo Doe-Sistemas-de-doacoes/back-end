@@ -12,6 +12,8 @@ import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/login")
@@ -22,7 +24,7 @@ public class LoginController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Mono<UserTokenDTO> login(@RequestBody CredentialDTO credential) {
+    public Mono<UserTokenDTO> login(@RequestBody @Valid CredentialDTO credential) {
         return loginService.login(credential);
     }
 

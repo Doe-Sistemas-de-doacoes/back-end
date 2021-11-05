@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/address")
@@ -29,7 +31,7 @@ public class AddressController {
     @ApiOperation(value = "Salva um novo endereço")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<AddressDTO> saveAddress(@RequestBody CreateNewAddressDTO body){
+    public Mono<AddressDTO> saveAddress(@RequestBody @Valid CreateNewAddressDTO body){
         return service.saveAddress(body);
     }
 
