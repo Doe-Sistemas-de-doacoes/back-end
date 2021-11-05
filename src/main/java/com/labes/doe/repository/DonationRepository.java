@@ -10,4 +10,5 @@ public interface DonationRepository extends ReactiveCrudRepository<Donation, Int
     Flux<Donation> findByStatusCollectionAndReceiverIdNull(DonationStatus statusCollection );
     Flux<Donation> findByStatusDeliveryAndReceiverIdNotNull(DonationStatus statusDelivery);
     Mono<Long> countByStatusDeliveryAndReceiverIdNotNull(DonationStatus statusDelivery);
+    Flux<Donation> findAllByDonorIdOrReceiverId( Integer donorId, Integer receiverId );
 }

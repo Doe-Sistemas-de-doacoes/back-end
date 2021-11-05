@@ -8,6 +8,7 @@ public interface DonationService {
     Flux<DonationDTO> findAllDonationAvailable();
     Flux<DonationDTO> findAllDonationToReceive();
     Flux<DonationDTO> findAllDonationToDelivery();
+    Flux<DonationDTO> findAllByDonorIdOrReceiverId( Integer userId );
     Mono<DonationDTO> saveDonation(CreateNewDonationDTO body);
     Mono<DonationDTO> updateDonation(Integer id, PatchDonationDTO body);
     Mono<Void> deleteDonation(Integer id);

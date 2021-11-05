@@ -37,6 +37,11 @@ public class DonationController {
         return service.findAllDonationToDelivery();
     }
 
+    @GetMapping( "/findAllByDonorIdOrReceiverId/{userId}" )
+    public Flux<DonationDTO> findAllByDonorIdOrReceiverId( @PathVariable Integer userId){
+        return service.findAllByDonorIdOrReceiverId( userId );
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<DonationDTO> saveDonation(@RequestBody @Valid CreateNewDonationDTO body){
