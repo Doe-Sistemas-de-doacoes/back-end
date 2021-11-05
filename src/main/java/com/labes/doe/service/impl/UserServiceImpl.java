@@ -9,10 +9,11 @@ import com.labes.doe.model.User;
 import com.labes.doe.repository.UserRepository;
 import com.labes.doe.service.AddressService;
 import com.labes.doe.service.UserService;
-import com.labes.doe.service.security.JWTUtil;
 import com.labes.doe.service.security.impl.UserDetailsImpl;
 import com.labes.doe.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -27,7 +28,6 @@ public class UserServiceImpl implements UserService {
     private final UserMapper mapper;
     private final AddressService addressService;
     private final AddressMapper addressMapper;
-    private final JWTUtil jwtUtil;
 
     @Override
     public Mono<UserDTO> getUserDTO() {
@@ -118,8 +118,12 @@ public class UserServiceImpl implements UserService {
     }
 
     private Mono<User> getUser() {
-        return Mono.just(jwtUtil.getUserAuthenticated().getUsername())
-                .flatMap(repository::findByUser)
+        return ReactiveSecurityContextHolder.getContext()
+                .map(securityContext -> {
+                    var principal = (UserDetailsImpl) securityContext.getAuthentication().getPrincipal();
+                    return principal.getId();
+                })
+                .flatMap(repository::findById)
                 .switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.USER_NOT_FOUND)));
     }
 }

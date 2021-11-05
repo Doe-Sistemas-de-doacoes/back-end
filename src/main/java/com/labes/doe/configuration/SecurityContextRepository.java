@@ -1,5 +1,6 @@
 package com.labes.doe.configuration;
 
+import com.labes.doe.model.User;
 import com.labes.doe.model.enumeration.Profile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -38,16 +40,13 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
                 .map(subs -> subs.substring(7))
                 .flatMap(token ->
                     Mono.just(new UsernamePasswordAuthenticationToken (
+                            null,
                             token,
-                            token,
-                            List.of(
-                                    new SimpleGrantedAuthority(Profile.ADMI.getRole()),
-                                    new SimpleGrantedAuthority(Profile.CLIE.getRole())
-                            )
+                            Collections.EMPTY_LIST
                         )
                     )
                 )
-                .flatMap(auth -> authenticationManager.authenticate(auth)
-                .map(SecurityContextImpl::new));
+                .flatMap(auth -> authenticationManager.authenticate(auth))
+                .map(SecurityContextImpl::new);
     }
 }

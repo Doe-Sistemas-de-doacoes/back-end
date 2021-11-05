@@ -23,8 +23,6 @@ public class JWTUtil {
     @Value("${service.jwt.expiration}")
     private Long expiration;
 
-    private UserDetails userDetails;
-
     public String generateToken(String username){
         Date now =new Date();
         Map<String, Object> claim = new HashMap<>();
@@ -63,10 +61,4 @@ public class JWTUtil {
         return !isTokenExpired(token);
     }
 
-    public void setUserAuthenticated(UserDetails userDetails) {
-        this.userDetails = userDetails;
-    }
-    public UserDetails getUserAuthenticated() {
-        return userDetails;
-    }
 }

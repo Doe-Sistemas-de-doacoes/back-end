@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -17,11 +18,8 @@ import reactor.core.publisher.Mono;
 @Component
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 
-    private final Logger log = LoggerFactory.getLogger(AuthenticationManager.class);
-
     private final ReactiveUserDetailsServiceImpl reactiveUserDetailsService;
     private final JWTUtil jwtUtil;
-   // private final UserRepository userRepository;
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
@@ -33,10 +31,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                 .flatMap(reactiveUserDetailsService::findByUsername)
                 .filter(userDetails -> userName.equals(userDetails.getUsername()) && jwtUtil.isTokenValidated(token))
                 .switchIfEmpty(Mono.error(new InvalidTokenException()))
-                .flatMap(userDetails -> {
-                    jwtUtil.setUserAuthenticated(userDetails);
-                    return Mono.just(authentication);
-                });
+                .flatMap(userDetails -> Mono.just( new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities())));
     }
 
 

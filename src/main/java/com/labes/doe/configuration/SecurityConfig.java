@@ -39,6 +39,8 @@ public class SecurityConfig {
                 authorizedExchangeSpec -> authorizedExchangeSpec
                         .pathMatchers(HttpMethod.POST, PUBLIC_MATCHERS)
                         .permitAll()
+                        .pathMatchers("/api/login/refreshToken")
+                        .authenticated()
                         .pathMatchers("/api/**")
                         .authenticated()
                         .anyExchange()
