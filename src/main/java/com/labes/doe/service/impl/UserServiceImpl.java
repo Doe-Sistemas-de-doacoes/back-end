@@ -1,6 +1,7 @@
 package com.labes.doe.service.impl;
 
 import com.labes.doe.dto.*;
+import com.labes.doe.exception.BusinessException;
 import com.labes.doe.exception.NotFoundException;
 import com.labes.doe.mapper.AddressMapper;
 import com.labes.doe.mapper.UserMapper;
@@ -13,7 +14,6 @@ import com.labes.doe.service.security.impl.UserDetailsImpl;
 import com.labes.doe.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -32,35 +32,22 @@ public class UserServiceImpl implements UserService {
     private final AddressMapper addressMapper;
 
     @Override
-    public Mono<UserDTO> getUserDTO() {
-        return getUser()
-                .flatMap( user -> addressService.findAddressByUser(user.getId())
-                        .collectList()
-                        .map(address -> {
-                            var userDTO = mapper.toDto(user);
-                            userDTO.setAddress(address);
-                            return userDTO;
-                        })
-                );
+    public Mono<UserDTO> getUser() {
+        return getLoggedUser().flatMap(this::mapToUserDTO);
     }
 
     @Override
     public Mono<UserDTO> getUserById(Integer id) {
-        return repository.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.USER_NOT_FOUND)))
-                .flatMap( user -> addressService.findAddressByUser(user.getId())
-                        .collectList()
-                        .map(address -> {
-                            var userDTO = mapper.toDto(user);
-                            userDTO.setAddress(address);
-                            return userDTO;
-                        })
-                );
+        return repository.findById(id).flatMap(this::mapToUserDTO);
     }
 
     @Override
     public Mono<UserDTO> saveUser(CreateNewUserDTO body) {
-        return Mono.just(body)
+        return Mono.just(body.getUser())
+                .flatMap(repository::findByUser)
+                .flatMap(user -> Mono.error(new BusinessException(MessageUtil.USER_ALREADY_EXISTS.getMessage())))
+                .switchIfEmpty(Mono.just(body))
+                .flatMap( u -> Mono.just(body))
                 .map( createNewUserDTO  -> {
                     var userEntity = mapper.toEntity(createNewUserDTO);
                     userEntity.setProfile(Profile.CLIE.getId());
@@ -70,8 +57,8 @@ public class UserServiceImpl implements UserService {
                 .flatMap(repository::save)
                 .flatMap(user -> Flux.fromIterable(body.getAddress())
                         .map( createNewAddressDTO -> {
-                             createNewAddressDTO.setUserId(user.getId() );
-                             return createNewAddressDTO;
+                            createNewAddressDTO.setUserId(user.getId() );
+                            return createNewAddressDTO;
                         })
                         .flatMap(addressService::saveAddress)
                         .collectList()
@@ -91,7 +78,7 @@ public class UserServiceImpl implements UserService {
                     return addressService.updateAddress(addressDTO.getId(), putAddressDTO);
                 })
                 .collectList()
-                .flatMap( addressDTOS -> getUser()
+                .flatMap( addressDTOS -> getLoggedUser()
                         .flatMap(user -> {
                             if( isNotEmpty(body.getName()) ) {
                                 user.setName(body.getName());
@@ -112,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<Void> deleteUser() {
-        return getUser()
+        return getLoggedUser()
                 .map(User::getId)
                 .flatMap( id -> addressService
                         .findAddressByUser(id)
@@ -122,7 +109,20 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
-    private Mono<User> getUser() {
+    private Mono<UserDTO> mapToUserDTO( User userIn ){
+        return Mono.just(userIn)
+                .switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.USER_NOT_FOUND)))
+                .flatMap( user -> addressService.findAddressByUser(user.getId())
+                        .collectList()
+                        .map(address -> {
+                            var userDTO = mapper.toDto(user);
+                            userDTO.setAddress(address);
+                            return userDTO;
+                        })
+                );
+    }
+
+    private Mono<User> getLoggedUser() {
         return ReactiveSecurityContextHolder.getContext()
                 .map(securityContext -> {
                     var principal = (UserDetailsImpl) securityContext.getAuthentication().getPrincipal();

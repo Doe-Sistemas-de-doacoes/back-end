@@ -1,8 +1,10 @@
 package com.labes.doe.controller;
 
+import com.labes.doe.exception.BusinessException;
 import com.labes.doe.exception.InvalidTokenException;
 import com.labes.doe.exception.NotFoundException;
 import com.labes.doe.exception.InvalidUsernamePasswordException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,5 +52,12 @@ public class ExceptionController {
                 .stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage))
         );
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> businessException(BusinessException exception) {
+        exception.printStackTrace();
+        return Map.of("error", exception.getMessage());
     }
 }

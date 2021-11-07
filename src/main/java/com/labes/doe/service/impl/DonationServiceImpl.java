@@ -6,7 +6,6 @@ import com.labes.doe.mapper.DonationMapper;
 import com.labes.doe.model.Donation;
 import com.labes.doe.model.enumeration.DonationStatus;
 import com.labes.doe.repository.DonationRepository;
-import com.labes.doe.service.AddressService;
 import com.labes.doe.service.DonationService;
 import com.labes.doe.service.UserService;
 import com.labes.doe.util.MessageUtil;
@@ -26,70 +25,42 @@ public class DonationServiceImpl implements DonationService {
     private final UserService userService;
 
     @Override
-    public Flux<DonationDTO> findAllDonationAvailable() {
-        return donationRepository
-                .findByStatusCollectionAndReceiverIdNull(DonationStatus.FINALIZADO)
-                .flatMap(donation -> Flux.zip(
-                        Flux.just(donation),
-                        userService.getUserById(donation.getDonorId())
-                ))
-                .map(tuple -> {
-                    var donation = tuple.getT1();
-                    var donor = tuple.getT2();
-                    var donationDTO = donationMapper.toDto(donation);
-
-                    donationDTO.setDonor(donor);
-
-                    return donationDTO;
-                });
+    public Flux<DonationDTO> findAll(DonationStatus status) {
+        return Mono.just(status)
+                .flatMapMany(donationStatus -> {
+                    if ( donationStatus.equals(DonationStatus.PENDENTE) )
+                        return donationRepository.findByStatusCollectionAndReceiverIdNull( DonationStatus.FINALIZADO );
+                    return donationRepository.findByStatusDeliveryAndReceiverIdNotNull( DonationStatus.FINALIZADO );
+                })
+                .flatMap(this::mapToDonationDTO);
     }
 
     @Override
-    public Flux<DonationDTO> findAllDonationToReceive() {
-        return donationRepository
-                .findByStatusCollectionAndReceiverIdNull(DonationStatus.PENDENTE)
-                .map(donationMapper::toDto);
+    public Flux<DonationDTO> findByUser() {
+        return userService.getUser()
+                .flatMapMany(userDTO -> donationRepository.findAllByDonorIdOrReceiverId(userDTO.getId(), userDTO.getId()))
+                .flatMap(this::mapToDonationDTO);
     }
 
-    @Override
-    public Flux<DonationDTO> findAllDonationToDelivery() {
-        return donationRepository
-                .findByStatusDeliveryAndReceiverIdNotNull(DonationStatus.PENDENTE)
-                .flatMap(donation -> Flux.zip(
-                        Flux.just(donation),
-                        userService.getUserById(donation.getDonorId()),
-                        userService.getUserById(donation.getReceiverId())
-                ))
-                .map(tuple -> {
-                    var donation = tuple.getT1();
-                    var donor = tuple.getT2();
-                    var receiver = tuple.getT3();
-                    var donationDTO = donationMapper.toDto(donation);
-
-                    donationDTO.setDonor(donor);
-                    donationDTO.setReceiver(receiver);
-
-                    return donationDTO;
-                });
-    }
-
-    @Override
-    public Flux <DonationDTO> findAllByDonorIdOrReceiverId( Integer userId ){
-        return donationRepository.findAllByDonorIdOrReceiverId( userId, userId ).map(donationMapper::toDto);
-    }
 
     @Override
     public Mono<DonationDTO> saveDonation(CreateNewDonationDTO body) {
-        return userService.getUserDTO()
+        return userService.getUser()
                 .onErrorMap(unesed -> new NotFoundException(MessageUtil.DONOR_NOT_FOUND))
                 .flatMap(userDTO -> {
-                    var donation = donationMapper.toEntity(body);
-                    donation.setStatusDelivery(DonationStatus.PENDENTE);
-                    donation.setStatusCollection(DonationStatus.FINALIZADO);
-                    donation.setDonorId(userDTO.getId());
-                    return donationRepository.save(donation);
-                })
-                .map(donationMapper::toDto);
+                    var donationEntity = donationMapper.toEntity(body);
+                    donationEntity.setDatetimeOfCollection(LocalDateTime.now());
+                    donationEntity.setStatusDelivery(DonationStatus.PENDENTE);
+                    donationEntity.setStatusCollection(DonationStatus.FINALIZADO);
+                    donationEntity.setDonorId(userDTO.getId());
+                    return donationRepository.save(donationEntity)
+                            .map( donation -> {
+                              var donationDTO = donationMapper.toDto(donation);
+                              donationDTO.setDonor(userDTO);
+                              return donationDTO;
+                            });
+                });
+
     }
 
     @Override
@@ -100,13 +71,12 @@ public class DonationServiceImpl implements DonationService {
                     donation.setDescription(body.getDescription());
                     return donationRepository.save(donation);
                 })
-                .map(donationMapper::toDto);
+                .flatMap(this::mapToDonationDTO);
     }
 
     @Override
     public Mono<Void> deleteDonation(Integer id) {
-        return getDonation(id)
-                .flatMap(donationRepository::delete);
+        return getDonation(id).flatMap(donationRepository::delete);
     }
 
     @Override
@@ -127,6 +97,23 @@ public class DonationServiceImpl implements DonationService {
     @Override
     public Mono<Long> countFinishedDonations() {
         return donationRepository.countByStatusDeliveryAndReceiverIdNotNull(DonationStatus.FINALIZADO);
+    }
+
+    private Mono<DonationDTO> mapToDonationDTO( Donation donation ){
+        return Mono.zip( Mono.just(donation),
+                    donation.getDonorId() != null ? userService.getUserById(donation.getDonorId()) : Mono.just(UserDTO.builder().build()),
+                    donation.getReceiverId() != null ? userService.getUserById(donation.getReceiverId()) : Mono.just(UserDTO.builder().build()))
+                .map(tuple -> {
+                    var donationDTO = donationMapper.toDto(tuple.getT1());
+                    var donor = tuple.getT2();
+                    var receiver = tuple.getT3();
+
+                    donationDTO.setDonor(donor);
+                    donationDTO.setReceiver(receiver);
+
+                    return donationDTO;
+                });
+
     }
 
     protected Mono<Donation> getDonation(Integer id) {
