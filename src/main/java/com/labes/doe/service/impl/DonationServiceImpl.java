@@ -1,6 +1,7 @@
 package com.labes.doe.service.impl;
 
 import com.labes.doe.dto.*;
+import com.labes.doe.exception.BusinessException;
 import com.labes.doe.exception.NotFoundException;
 import com.labes.doe.mapper.DonationMapper;
 import com.labes.doe.model.Donation;
@@ -65,7 +66,9 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public Mono<DonationDTO> updateDonation(Integer id, PatchDonationDTO body) {
-        return getDonation(id)
+        return userService.getUser()
+                .flatMap(userDTO -> donationRepository.findByIdAndDonorId(id,userDTO.getId()))
+                .switchIfEmpty(Mono.error(new BusinessException("Doação não encontrada. Verifique se a doação pertence ao usuário!")))
                 .flatMap(donation -> {
                     donation.setTypeOfDonation(body.getTypeOfDonation());
                     donation.setDescription(body.getDescription());
@@ -76,7 +79,10 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public Mono<Void> deleteDonation(Integer id) {
-        return getDonation(id).flatMap(donationRepository::delete);
+        return userService.getUser()
+                .flatMap(userDTO -> donationRepository.findByIdAndDonorId(id,userDTO.getId()))
+                .switchIfEmpty(Mono.error(new BusinessException("Doação não encontrada. Verifique se a doação pertence ao usuário!")))
+                .flatMap(donationRepository::delete);
     }
 
     @Override
