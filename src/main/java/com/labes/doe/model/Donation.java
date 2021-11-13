@@ -28,32 +28,25 @@ public class Donation {
     @Column("codigo_recebedor")
     private Integer receiverId;
 
+    @Column("codigo_endereco_doador")
+    private Integer donorAddressId;
+
+    @Column("codigo_endereco_recebedor")
+    private Integer receiverAddressId;
+
+    @Column("tipo_doacao")
+    private DonationType type;
+
     @Column("descricao")
     private String description;
 
-    @Column("tipo_doacao")
-    private DonationType typeOfDonation;
+    @Column("data_hora")
+    private LocalDateTime date;
 
-    @Column("busca_em_casa")
-    private Boolean isPickUpAtHome;
+    @Column("status")
+    private DonationStatus status;
 
-    @Column("data_hora_coleta_doador")
-    private LocalDateTime datetimeOfCollection;
-
-    @Column("data_hora_entrega_recebedor")
-    private LocalDateTime datetimeOfDelivery;
-
-    @Column("status_entrega_recebedor")
-    private DonationStatus statusDelivery;
-
-    @Column("status_coleta_doador")
-    private DonationStatus statusCollection;
-
-    @Transient
-    private User donor;
-
-    @Transient
-    private User receiver;
-
+    @Column("is_entrega")
+    private Boolean isDelivery;
 
 }

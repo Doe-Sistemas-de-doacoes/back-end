@@ -3,9 +3,6 @@ package com.labes.doe.dto;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Builder
 @NoArgsConstructor
@@ -22,6 +19,4 @@ public class CreateNewUserDTO {
 
     @NotNull(message = "A senha é obrigatória.")
     private String password;
-
-    private List<CreateNewAddressDTO> address = new ArrayList<>();
 }

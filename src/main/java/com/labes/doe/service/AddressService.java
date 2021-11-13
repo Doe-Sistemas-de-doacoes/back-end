@@ -9,7 +9,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface AddressService {
-
+	Mono< AddressDTO > findById(Integer id);
 	Flux< AddressDTO > findAddressByUser(Integer userId);
 	Flux< AddressDTO > findAllAddress();
 	Mono< AddressDTO > saveAddress( CreateNewAddressDTO body );

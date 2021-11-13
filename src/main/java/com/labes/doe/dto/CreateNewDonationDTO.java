@@ -13,15 +13,15 @@ import java.time.LocalDateTime;
 @Setter
 public class CreateNewDonationDTO {
 
-    @NotNull(message = "O tipo de doação é obrigatório.")
-    private DonationType typeOfDonation;
+    @NotNull(message = "O tipo é obrigatório.")
+    private DonationType type;
 
     @NotNull(message = "A descrição é obrigatória.")
     private String description;
 
-    @NotNull(message = "A busca em casa é obrigatória.")
-    private Boolean isPickUpAtHome;
+    @NotNull(message = "É entrega é obrigatório.")
+    private Boolean isDelivery;
 
-    private LocalDateTime datetimeOfCollection;
+    private Integer addressId;
 
 }

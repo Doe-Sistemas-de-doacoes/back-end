@@ -25,38 +25,38 @@ public class DonationController {
         return service.findAll( DonationStatus.valueOf(status) );
     }
 
-    @ApiOperation(value = "Retorna a quantidade de doações encerradas.")
-    @GetMapping( "/countFinishedDonations" )
-    public Mono<Long> countFinishedDonations(){
-        return service.countFinishedDonations();
+    @ApiOperation(value = "Retorna a quantidade de doações conforme seu status.")
+    @GetMapping( "/count" )
+    public Mono<Long> count( @RequestParam( defaultValue = "FINALIZADO", required = false ) String status ){
+        return service.count(  DonationStatus.valueOf(status) );
     }
 
     @ApiOperation(value = "Salva uma nova doação.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<DonationDTO> saveDonation(@RequestBody @Valid CreateNewDonationDTO body){
-        return service.saveDonation(body);
+    public Mono<DonationDTO> save( @RequestBody @Valid CreateNewDonationDTO body ){
+        return service.save(body);
     }
 
     @ApiOperation(value = "Atualiza uma doação.")
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<DonationDTO> updateDonation(@PathVariable Integer id, @RequestBody PatchDonationDTO body){
-        return service.updateDonation(id, body);
+    public Mono<DonationDTO> update(@PathVariable Integer id, @RequestBody PatchDonationDTO body){
+        return service.update(id, body);
     }
 
     @ApiOperation(value = "Apaga uma doação.")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> deleteDonation(@PathVariable Integer id){
-        return service.deleteDonation(id);
+    public Mono<Void> delete(@PathVariable Integer id){
+        return service.delete(id);
     }
 
     @ApiOperation(value = "Recebe doações.")
-    @PatchMapping("/receiveDonation")
+    @PatchMapping("/{id}/receive")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> receiveDonation(@RequestBody @Valid ReceiveDonationDTO body){
-        return service.receiveDonation(body);
+    public Mono<DonationDTO> receive(@PathVariable Integer id, @RequestBody ReceiveDonationDTO body){
+        return service.receive(id, body);
     }
 
 }

@@ -30,6 +30,13 @@ public class AddressServiceImpl implements AddressService {
 	private final UserService userService;
 
 	@Override
+	public Mono<AddressDTO> findById(Integer id) {
+		return addressRepository.findById(id)
+				.switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.ADDRESS_NOT_FOUND)))
+				.map(addressMapper::toDto);
+	}
+
+	@Override
 	public Flux<AddressDTO> findAddressByUser(Integer userId) {
 		return userService.getUser()
 				.flatMapMany(userDTO -> {

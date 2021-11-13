@@ -7,15 +7,16 @@ import com.labes.doe.mapper.DonationMapper;
 import com.labes.doe.model.Donation;
 import com.labes.doe.model.enumeration.DonationStatus;
 import com.labes.doe.repository.DonationRepository;
+import com.labes.doe.service.AddressService;
 import com.labes.doe.service.DonationService;
 import com.labes.doe.service.UserService;
 import com.labes.doe.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.time.LocalDateTime;
+import reactor.util.function.Tuple3;
 
 @RequiredArgsConstructor
 @Service
@@ -24,16 +25,18 @@ public class DonationServiceImpl implements DonationService {
     private final DonationRepository donationRepository;
     private final DonationMapper donationMapper;
     private final UserService userService;
+    private final AddressService addressService;
 
     @Override
     public Flux<DonationDTO> findAll(DonationStatus status) {
-        return Mono.just(status)
-                .flatMapMany(donationStatus -> {
-                    if ( donationStatus.equals(DonationStatus.PENDENTE) )
-                        return donationRepository.findByStatusCollectionAndReceiverIdNull( DonationStatus.FINALIZADO );
-                    return donationRepository.findByStatusDeliveryAndReceiverIdNotNull( DonationStatus.FINALIZADO );
-                })
+        return Flux.just(status)
+                .flatMap(donationRepository::findByStatus)
                 .flatMap(this::mapToDonationDTO);
+    }
+
+    @Override
+    public Mono<Long> count( DonationStatus status ) {
+        return donationRepository.countByStatus(status);
     }
 
     @Override
@@ -45,32 +48,38 @@ public class DonationServiceImpl implements DonationService {
 
 
     @Override
-    public Mono<DonationDTO> saveDonation(CreateNewDonationDTO body) {
+    public Mono<DonationDTO> save(CreateNewDonationDTO createNewDonationDTO) {
         return userService.getUser()
-                .onErrorMap(unesed -> new NotFoundException(MessageUtil.DONOR_NOT_FOUND))
-                .flatMap(userDTO -> {
-                    var donationEntity = donationMapper.toEntity(body);
-                    donationEntity.setDatetimeOfCollection(LocalDateTime.now());
-                    donationEntity.setStatusDelivery(DonationStatus.PENDENTE);
-                    donationEntity.setStatusCollection(DonationStatus.FINALIZADO);
-                    donationEntity.setDonorId(userDTO.getId());
-                    return donationRepository.save(donationEntity)
-                            .map( donation -> {
-                              var donationDTO = donationMapper.toDto(donation);
-                              donationDTO.setDonor(userDTO);
-                              return donationDTO;
-                            });
-                });
+            .flatMap(userDTO -> {
+                // se o doador escolheu que vai levar até o local e o recebedor não passou o seu endereço então lança exceção
+                if ( !createNewDonationDTO.getIsDelivery() && createNewDonationDTO.getAddressId() == null ){
+                    return Mono.error( new BusinessException("O doador escolheu 'Prefiro que venham até mim', porém não foi informado o código do endereço.") );
+                }
 
+                var donationEntity = donationMapper.toEntity(createNewDonationDTO);
+                donationEntity.setDonorId(userDTO.getId());
+                donationEntity.setStatus(DonationStatus.PENDENTE);
+
+                if ( !createNewDonationDTO.getIsDelivery() ){
+                    return addressService.findById( createNewDonationDTO.getAddressId() )
+                            .flatMap( addressDTO -> {
+                                donationEntity.setDonorAddressId( addressDTO.getId() );
+                                return donationRepository.save(donationEntity);
+                            });
+                }
+
+                return donationRepository.save(donationEntity);
+            })
+            .flatMap( this::mapToDonationDTO );
     }
 
     @Override
-    public Mono<DonationDTO> updateDonation(Integer id, PatchDonationDTO body) {
+    public Mono<DonationDTO> update(Integer id, PatchDonationDTO body) {
         return userService.getUser()
                 .flatMap(userDTO -> donationRepository.findByIdAndDonorId(id,userDTO.getId()))
                 .switchIfEmpty(Mono.error(new BusinessException("Doação não encontrada. Verifique se a doação pertence ao usuário!")))
                 .flatMap(donation -> {
-                    donation.setTypeOfDonation(body.getTypeOfDonation());
+                    donation.setType(body.getTypeOfDonation());
                     donation.setDescription(body.getDescription());
                     return donationRepository.save(donation);
                 })
@@ -78,48 +87,72 @@ public class DonationServiceImpl implements DonationService {
     }
 
     @Override
-    public Mono<Void> deleteDonation(Integer id) {
+    public Mono<DonationDTO> receive(Integer id, ReceiveDonationDTO receiveDonation) {
+        return this.getDonation(id)
+                .flatMap(donation -> userService.getUser()
+                        .flatMap(user -> {
+                            // se o doador escolheu que vai levar até o local e o recebedor não passou o seu endereço então lança exceção
+                            if ( donation.getIsDelivery() && receiveDonation.getAddressId() == null ){
+                                return Mono.error( new BusinessException("O Doador preferiu entregar no local, porém não foi informado o código do endereço.") );
+                            }
+
+                            donation.setReceiverId( user.getId() );
+                            donation.setStatus(DonationStatus.FINALIZADO);
+
+                            if ( donation.getIsDelivery() ){
+                                return addressService.findById( receiveDonation.getAddressId() )
+                                        .flatMap( addressDTO -> {
+                                            donation.setReceiverAddressId( addressDTO.getId() );
+                                            return donationRepository.save(donation);
+                                        });
+                            }
+
+                            return donationRepository.save(donation);
+                        })
+                )
+                .flatMap(this::mapToDonationDTO);
+    }
+
+    @Override
+    public Mono<Void> delete(Integer id) {
         return userService.getUser()
                 .flatMap(userDTO -> donationRepository.findByIdAndDonorId(id,userDTO.getId()))
                 .switchIfEmpty(Mono.error(new BusinessException("Doação não encontrada. Verifique se a doação pertence ao usuário!")))
                 .flatMap(donationRepository::delete);
     }
 
-    @Override
-    public Mono<Void> receiveDonation(ReceiveDonationDTO body) {
-        return userService.getUserById(body.getReceiverId())
-                .onErrorMap(unesed -> new NotFoundException(MessageUtil.RECEIVE_NOT_FOUND))
-                .thenMany(Flux.fromIterable(body.getDonations()))
-                .flatMap(this::getDonation)
-                .flatMap(donation -> {
-                    donation.setReceiverId(body.getReceiverId());
-                    donation.setStatusDelivery(DonationStatus.FINALIZADO);
-                    donation.setDatetimeOfDelivery( LocalDateTime.now() );
-                    return donationRepository.save(donation);
-                })
-                .then();
-    }
-
-    @Override
-    public Mono<Long> countFinishedDonations() {
-        return donationRepository.countByStatusDeliveryAndReceiverIdNotNull(DonationStatus.FINALIZADO);
-    }
-
-    private Mono<DonationDTO> mapToDonationDTO( Donation donation ){
-        return Mono.zip( Mono.just(donation),
+    private Mono<DonationDTO> mapToDonationDTO( Donation donation ) {
+        return Mono.zip(
+                    Mono.just(donation),
                     donation.getDonorId() != null ? userService.getUserById(donation.getDonorId()) : Mono.just(UserDTO.builder().build()),
                     donation.getReceiverId() != null ? userService.getUserById(donation.getReceiverId()) : Mono.just(UserDTO.builder().build()))
-                .map(tuple -> {
-                    var donationDTO = donationMapper.toDto(tuple.getT1());
+                .flatMap(tuple -> {
+                    var donationEntity = tuple.getT1();
                     var donor = tuple.getT2();
                     var receiver = tuple.getT3();
 
-                    donationDTO.setDonor(donor);
-                    donationDTO.setReceiver(receiver);
+                    var donationDTO = donationMapper.toDto(donationEntity);
+
+                    donationDTO.setDonor(DonorReceiverDTO.builder().id(donor.getId()).name(donor.getName()).build());
+                    donationDTO.setReceiver(DonorReceiverDTO.builder().id(receiver.getId()).name(receiver.getName()).build());
+
+                    return Mono.zip(
+                            Mono.just( donationDTO ),
+                            donationEntity.getDonorAddressId() != null ? addressService.findById( donationEntity.getDonorAddressId() ) : Mono.just( AddressDTO.builder().build() ),
+                            donationEntity.getReceiverAddressId() != null ? addressService.findById( donationEntity.getReceiverAddressId() ) : Mono.just( AddressDTO.builder().build() )
+                    );
+                })
+                .map(tuple -> {
+                    var donationDTO = tuple.getT1();
+                    var donorAddress = tuple.getT2();
+                    var receiverAddress = tuple.getT3();
+
+                    if( donationDTO.getReceiver().getId() == null ) donationDTO.setReceiver(null);
+                    if( donorAddress.getId() != null ) donationDTO.getDonor().setAddress(donorAddress);
+                    if( receiverAddress.getId() != null ) donationDTO.getReceiver().setAddress(receiverAddress);
 
                     return donationDTO;
                 });
-
     }
 
     protected Mono<Donation> getDonation(Integer id) {

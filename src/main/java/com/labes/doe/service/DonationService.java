@@ -8,9 +8,9 @@ import reactor.core.publisher.Mono;
 public interface DonationService {
     Flux<DonationDTO> findAll(DonationStatus status);
     Flux<DonationDTO> findByUser();
-    Mono<DonationDTO> saveDonation(CreateNewDonationDTO body);
-    Mono<DonationDTO> updateDonation(Integer id, PatchDonationDTO body);
-    Mono<Void> deleteDonation(Integer id);
-    Mono<Void> receiveDonation(ReceiveDonationDTO body);
-    Mono<Long> countFinishedDonations();
+    Mono<DonationDTO> save(CreateNewDonationDTO body);
+    Mono<DonationDTO> update(Integer id, PatchDonationDTO body);
+    Mono<Void> delete(Integer id);
+    Mono<DonationDTO> receive(Integer id, ReceiveDonationDTO body);
+    Mono<Long> count( DonationStatus status );
 }

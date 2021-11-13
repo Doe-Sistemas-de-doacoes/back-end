@@ -29,7 +29,4 @@ public class User {
     @Column("nome")
     private String name;
 
-    @Column("perfil")
-    private Integer profile;
-
 }

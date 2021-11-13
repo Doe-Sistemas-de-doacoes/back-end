@@ -26,15 +26,7 @@ public class ReactiveUserDetailsServiceImpl implements ReactiveUserDetailsServic
                 .findByUser(username)
                 .switchIfEmpty(Mono.error(new InvalidUsernamePasswordException()))
                 .map(user -> {
-                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-                    if ( Profile.toEnum( user.getProfile() ).equals(Profile.ADMI) ) {
-                        authorities.add(new SimpleGrantedAuthority( Profile.CLIE.getRole() ));
-                        authorities.add(new SimpleGrantedAuthority( Profile.ADMI.getRole() ));
-                    }else{
-                        authorities.add(new SimpleGrantedAuthority( Profile.toEnum( user.getProfile() ).getRole() ));
-                    }
-
+                    List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("CLIE"));
                     return new UserDetailsImpl(user.getId(), authorities, user.getPassword(), user.getUser());
                 });
     }
