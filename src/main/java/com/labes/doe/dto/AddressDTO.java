@@ -14,11 +14,11 @@ import lombok.Setter;
 @Setter
 public class AddressDTO {
 	private Integer id;
-	private String  neighborhood;
-	private String  city;
-	private String  state;
-	private Integer number;
-	private String  street;
+	private String neighborhood;
+	private String city;
+	private String state;
+	private String number;
+	private String street;
 	private Region region;
 	private Integer userId;
 }

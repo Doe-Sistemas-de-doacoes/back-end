@@ -28,7 +28,7 @@ public class Address {
     private String state;
 
     @Column("numero")
-    private Integer number;
+    private String number;
 
     @Column("rua_avenida")
     private String street;

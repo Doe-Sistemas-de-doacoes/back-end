@@ -25,7 +25,7 @@ public class CreateNewAddressDTO {
 	private String state;
 
 	@NotNull(message = "O número é obrigatório.")
-	private Integer number;
+	private String number;
 
 	@NotNull(message = "A rua é obrigatória.")
 	private String street;

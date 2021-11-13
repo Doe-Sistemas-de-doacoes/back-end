@@ -11,10 +11,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PutAddressDTO {
-	private String  neighborhood;
-	private String  city;
-	private String  state;
-	private Integer number;
+	private String neighborhood;
+	private String city;
+	private String state;
+	private String number;
 	private String street;
 	private Region region;
 }
