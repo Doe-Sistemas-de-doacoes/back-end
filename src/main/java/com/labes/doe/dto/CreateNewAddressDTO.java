@@ -33,6 +33,4 @@ public class CreateNewAddressDTO {
 	@NotNull(message = "A região é obrigatória.")
 	private Region region;
 
-	@NotNull(message = "O id do usuário é obrigatório.")
-	private Integer userId;
 }

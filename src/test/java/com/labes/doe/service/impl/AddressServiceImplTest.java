@@ -8,7 +8,6 @@ import com.labes.doe.mapper.AddressMapper;
 import com.labes.doe.model.Address;
 import com.labes.doe.repository.AddressRepository;
 import com.labes.doe.service.UserService;
-import com.labes.doe.util.MessageUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +53,7 @@ class AddressServiceImplTest {
         when(addressMapper.toDto(any(Address.class)))
                 .thenReturn(AddressDTO.builder().build());
 
-        addressService.saveAddress(CreateNewAddressDTO.builder().build())
+        addressService.save(CreateNewAddressDTO.builder().build())
                 .as(StepVerifier::create)
                 .expectNextCount(1)
                 .verifyComplete();
@@ -63,25 +62,29 @@ class AddressServiceImplTest {
     }
 
     @Test
-    @DisplayName("Deve retornar todos os endereços")
-    public void findAll(){
-        when(addressRepository.findAll())
+    @DisplayName("Deve retornar todos os endereços do usuário logado.")
+    public void findAllByLoggedUser(){
+        var userId = 1;
+        when(userService.getUser())
+                .thenReturn( Mono.just( UserDTO.builder().id( userId ).build()) );
+
+        when(addressRepository.findByUserId( userId ) )
                 .thenReturn( Flux.just( Address.builder().build(), Address.builder().build()) );
 
         when(addressMapper.toDto(any(Address.class)))
                 .thenReturn(AddressDTO.builder().build());
 
-        addressService.findAllAddress()
+        addressService.findByUser()
                 .as(StepVerifier::create)
                 .expectNextCount(2)
                 .verifyComplete();
 
-        verify(addressRepository).findAll();
+        verify( addressRepository ).findByUserId( userId );
     }
 
     @Test
-    @DisplayName("Deve retornar os endereços pelo código do usuário")
-    public void findByUserId(){
+    @DisplayName("Deve retornar o usuário e seus endereços.")
+    public void findByUserAndAddress(){
         when(userService.getUser())
                 .thenReturn( Mono.just( UserDTO.builder().id(1).build()) );
 
@@ -91,26 +94,12 @@ class AddressServiceImplTest {
         when(addressMapper.toDto(any(Address.class)))
                 .thenReturn(AddressDTO.builder().build());
 
-        addressService.findAddressByUser(1)
+        addressService.getUserAndAddress()
                 .as(StepVerifier::create)
-                .expectNextCount(2)
+                .expectNextCount(1)
                 .verifyComplete();
 
         verify(addressRepository).findByUserId( any(Integer.class) );
-    }
-
-    @Test
-    @DisplayName("Deve lançar erro se o código do usuário não for o mesmo código do usuário logado")
-    public void shoundReturnErrorWhenUserIdIsNotEqualLoggedUserId(){
-        when(userService.getUser())
-                .thenReturn( Mono.just( UserDTO.builder().id(2).build()) );
-
-        addressService.findAddressByUser(1)
-                .as(StepVerifier::create)
-                .expectErrorMessage("O id do usuário não pertence ao usuário logado!")
-                .verify();
-
-        verify(addressRepository, never()).findByUserId( any(Integer.class) );
     }
 
     @Test
@@ -125,7 +114,7 @@ class AddressServiceImplTest {
         when(addressRepository.delete(any(Address.class)))
                 .thenReturn( Mono.empty() );
 
-        addressService.deleteAddress(1)
+        addressService.delete(1)
                 .as(StepVerifier::create)
                 .expectNextCount(0)
                 .verifyComplete();
@@ -149,7 +138,7 @@ class AddressServiceImplTest {
         when(addressMapper.toDto(any(Address.class)))
                 .thenReturn(AddressDTO.builder().id(1).city("Rio de janeiro").state("RJ").build());
 
-        addressService.updateAddress( 1, PutAddressDTO.builder().build())
+        addressService.update( 1, PutAddressDTO.builder().build())
                 .as(StepVerifier::create)
                 .expectNextCount(1)
                 .verifyComplete();
@@ -167,7 +156,7 @@ class AddressServiceImplTest {
         when(addressRepository.findByIdAndUserId(1, 1))
                 .thenReturn( Mono.empty() );
 
-        addressService.updateAddress( 1, PutAddressDTO.builder().build())
+        addressService.update( 1, PutAddressDTO.builder().build())
                 .as(StepVerifier::create)
                 .expectErrorMessage("Endereço não encontrado. Verifique se o endereço pertence ao usuário!")
                 .verify();

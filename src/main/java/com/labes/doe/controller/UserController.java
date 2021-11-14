@@ -4,7 +4,9 @@ import com.labes.doe.dto.CreateNewUserDTO;
 import com.labes.doe.dto.DonationDTO;
 import com.labes.doe.dto.UpdateUserDTO;
 import com.labes.doe.dto.UserDTO;
+import com.labes.doe.service.AddressService;
 import com.labes.doe.service.DonationService;
+import com.labes.doe.dto.UserAdressDTO;
 import com.labes.doe.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +24,12 @@ public class UserController {
 
     private final UserService userService;
     private final DonationService donationService;
+    private final AddressService addressService;
 
-    @ApiOperation(value = "Retorna o usuário.")
+    @ApiOperation(value = "Retorna o usuário com seus endereços.")
     @GetMapping
-    public Mono<UserDTO> getUser(){
-        return userService.getUser();
+    public Mono<UserAdressDTO> getUser(){
+        return addressService.getUserAndAddress();
     }
 
     @ApiOperation(value = "Retorna todas as doações do usuário.")
@@ -38,21 +41,21 @@ public class UserController {
     @ApiOperation(value = "Salva um novo usuário.")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Mono<UserDTO> saveUser(@RequestBody @Valid CreateNewUserDTO user){
-        return userService.saveUser(user);
+    public Mono<UserDTO> save(@RequestBody @Valid CreateNewUserDTO user){
+        return userService.save(user);
     }
 
     @ApiOperation(value = "Apaga um usuário.")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping()
-    public Mono<Void> deleteUser(){
-        return userService.deleteUser();
+    public Mono<Void> delete(){
+        return userService.delete();
     }
 
     @ApiOperation(value = "Atualiza um usuário.")
     @PutMapping()
-    public Mono<UserDTO> updateUser(@RequestBody UpdateUserDTO user){
-        return userService.updateUser(user);
+    public Mono<UserDTO> update(@RequestBody UpdateUserDTO user){
+        return userService.update(user);
     }
 
 }

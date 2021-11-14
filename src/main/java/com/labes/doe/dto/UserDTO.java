@@ -1,9 +1,5 @@
 package com.labes.doe.dto;
-
-import com.labes.doe.model.enumeration.Profile;
 import lombok.*;
-
-import java.util.List;
 
 @Builder
 @NoArgsConstructor

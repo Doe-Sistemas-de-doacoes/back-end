@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<UserDTO> saveUser(CreateNewUserDTO newUserDTO) {
+    public Mono<UserDTO> save(CreateNewUserDTO newUserDTO) {
         return Mono.just(newUserDTO.getUser())
                 .flatMap(repository::findByUser)
                 .flatMap(user -> Mono.error(new BusinessException(MessageUtil.USER_ALREADY_EXISTS.getMessage())))
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<UserDTO> updateUser( UpdateUserDTO body) {
+    public Mono<UserDTO> update(UpdateUserDTO body) {
         return getLoggedUser()
                 .flatMap(user -> {
                     if( isNotEmpty(body.getName()) ) user.setName(body.getName());
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<Void> deleteUser() {
+    public Mono<Void> delete() {
         return getLoggedUser().flatMap(repository::delete);
     }
 

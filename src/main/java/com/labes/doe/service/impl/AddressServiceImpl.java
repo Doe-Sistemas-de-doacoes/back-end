@@ -1,25 +1,19 @@
 package com.labes.doe.service.impl;
 
+import com.labes.doe.dto.*;
 import com.labes.doe.exception.BusinessException;
 import com.labes.doe.exception.NotFoundException;
 import com.labes.doe.service.UserService;
 import com.labes.doe.util.MessageUtil;
 import org.springframework.stereotype.Service;
 
-import com.labes.doe.dto.AddressDTO;
-import com.labes.doe.dto.CreateNewAddressDTO;
-import com.labes.doe.dto.PutAddressDTO;
 import com.labes.doe.mapper.AddressMapper;
-import com.labes.doe.model.Address;
 import com.labes.doe.repository.AddressRepository;
 import com.labes.doe.service.AddressService;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
-import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Service
@@ -37,24 +31,31 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public Flux<AddressDTO> findAddressByUser(Integer userId) {
+	public Flux<AddressDTO> findByUser() {
 		return userService.getUser()
-				.flatMapMany(userDTO -> {
-					if ( !userDTO.getId().equals(userId) ) {
-						return Mono.error(new BusinessException("O id do usuário não pertence ao usuário logado!"));
-					}
-					return addressRepository.findByUserId(userId);
-				})
-				.map( addressMapper::toDto );
+				.map(UserDTO::getId)
+				.flatMapMany(addressRepository::findByUserId)
+				.map(addressMapper::toDto);
 	}
 
 	@Override
-	public Flux<AddressDTO> findAllAddress() {
-		return addressRepository.findAll().map( addressMapper::toDto );
+	public Mono<UserAdressDTO> getUserAndAddress() {
+		return userService.getUser()
+				.flatMap(userDTO -> addressRepository.findByUserId(userDTO.getId())
+						.map(addressMapper::toDto)
+						.collectList()
+						.map(address -> UserAdressDTO.builder()
+							.id(userDTO.getId())
+							.user(userDTO.getUser())
+							.name(userDTO.getName())
+							.address( address )
+							.build()
+						)
+				);
 	}
 
 	@Override
-	public Mono<AddressDTO> saveAddress( CreateNewAddressDTO body ) {
+	public Mono<AddressDTO> save(CreateNewAddressDTO body ) {
 		return userService.getUser()
 				.map(userDTO -> {
 					var address = addressMapper.toEntity(body);
@@ -66,7 +67,7 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public Mono<AddressDTO> updateAddress(Integer id, PutAddressDTO body) {
+	public Mono<AddressDTO> update(Integer id, PutAddressDTO body) {
 		return userService.getUser()
 				.flatMap(userDTO -> addressRepository.findByIdAndUserId(id,userDTO.getId()))
 				.switchIfEmpty(Mono.error(new BusinessException("Endereço não encontrado. Verifique se o endereço pertence ao usuário!")))
@@ -83,7 +84,7 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public Mono<Void> deleteAddress(Integer id) {
+	public Mono<Void> delete(Integer id) {
 		return userService.getUser()
 				.flatMap(userDTO -> addressRepository.findByIdAndUserId(id,userDTO.getId()))
 				.switchIfEmpty(Mono.error(new BusinessException("Endereço não encontrado. Verifique se o endereço pertence ao usuário!")))
