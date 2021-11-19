@@ -22,6 +22,12 @@ public class CreateNewDonationDTO {
     @NotNull(message = "É entrega é obrigatório.")
     private Boolean isDelivery;
 
+    @NotNull(message = "O email é obrigatório.")
+    private String email;
+
+    @NotNull(message = "O telefone é obrigatório.")
+    private String phone;
+
     private Integer addressId;
 
 }

@@ -4,6 +4,7 @@ import com.labes.doe.model.enumeration.DonationStatus;
 import com.labes.doe.model.enumeration.DonationType;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Builder
@@ -19,5 +20,7 @@ public class DonationDTO {
     private DonorReceiverDTO donor;
     private DonorReceiverDTO receiver;
     private Boolean isDelivery;
+    private String email;
+    private String phone;
     private LocalDateTime date;
 }

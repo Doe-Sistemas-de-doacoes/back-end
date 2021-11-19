@@ -19,13 +19,13 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 
-
 @Configuration
 @EnableWebFluxSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_MATCHERS = {"/api/login", "/api/users"};
+    private static final String[] PUBLIC_POST_MATCHERS = { "/api/login", "/api/users" };
+    private static final String[] PUBLIC_GET_MATCHERS  = { "/api/donations", "/api/donations/count" };
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -37,7 +37,9 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http.authorizeExchange(
                 authorizedExchangeSpec -> authorizedExchangeSpec
-                        .pathMatchers(HttpMethod.POST, PUBLIC_MATCHERS)
+                        .pathMatchers(HttpMethod.POST, PUBLIC_POST_MATCHERS)
+                        .permitAll()
+                        .pathMatchers(HttpMethod.GET, PUBLIC_GET_MATCHERS)
                         .permitAll()
                         .pathMatchers("/api/login/refreshToken")
                         .authenticated()

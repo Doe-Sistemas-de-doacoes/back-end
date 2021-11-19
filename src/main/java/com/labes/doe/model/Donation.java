@@ -49,4 +49,10 @@ public class Donation {
     @Column("is_entrega")
     private Boolean isDelivery;
 
+    @Column("email")
+    private String email;
+
+    @Column("telefone")
+    private String phone;
+
 }
