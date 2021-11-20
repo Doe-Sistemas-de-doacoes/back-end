@@ -9,14 +9,18 @@ import com.labes.doe.model.enumeration.DonationStatus;
 import com.labes.doe.repository.DonationRepository;
 import com.labes.doe.service.AddressService;
 import com.labes.doe.service.DonationService;
+import com.labes.doe.service.S3Service;
 import com.labes.doe.service.UserService;
 import com.labes.doe.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple3;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -26,6 +30,7 @@ public class DonationServiceImpl implements DonationService {
     private final DonationMapper donationMapper;
     private final UserService userService;
     private final AddressService addressService;
+    private final S3Service s3Service;
 
     @Override
     public Flux<DonationDTO> findAll(DonationStatus status) {
@@ -37,6 +42,20 @@ public class DonationServiceImpl implements DonationService {
     @Override
     public Mono<Long> count( DonationStatus status ) {
         return donationRepository.countByStatus(status);
+    }
+
+    @Override
+    public Mono< Map<String, String> > upload(Integer id, Mono<FilePart> file) {
+        return userService.getUser()
+                .flatMap(userDTO -> donationRepository.findByIdAndDonorId(id,userDTO.getId()))
+                .switchIfEmpty(Mono.error(new BusinessException("Doação não encontrada. Verifique se a doação pertence ao usuário!")))
+                .flatMap( donation -> s3Service.uploadF(file)
+                        .flatMap(src -> {
+                            donation.setImageSrc(src);
+                            return donationRepository.save(donation);
+                        })
+                        .map( donation1 -> Map.of( "imageSrc", donation1.getImageSrc() ) )
+                );
     }
 
     @Override

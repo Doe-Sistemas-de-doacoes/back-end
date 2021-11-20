@@ -55,4 +55,7 @@ public class Donation {
     @Column("telefone")
     private String phone;
 
+    @Column("caminho_imagem")
+    private String imageSrc;
+
 }

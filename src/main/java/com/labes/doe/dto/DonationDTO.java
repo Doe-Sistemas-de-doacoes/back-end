@@ -3,6 +3,7 @@ package com.labes.doe.dto;
 import com.labes.doe.model.enumeration.DonationStatus;
 import com.labes.doe.model.enumeration.DonationType;
 import lombok.*;
+import org.springframework.data.relational.core.mapping.Column;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -23,4 +24,5 @@ public class DonationDTO {
     private String email;
     private String phone;
     private LocalDateTime date;
+    private String imageSrc;
 }

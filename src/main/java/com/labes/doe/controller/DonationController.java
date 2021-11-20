@@ -3,14 +3,19 @@ package com.labes.doe.controller;
 import com.labes.doe.dto.*;
 import com.labes.doe.model.enumeration.DonationStatus;
 import com.labes.doe.service.DonationService;
+import com.labes.doe.service.S3Service;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,6 +41,13 @@ public class DonationController {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<DonationDTO> save( @RequestBody @Valid CreateNewDonationDTO body ){
         return service.save(body);
+    }
+
+    @ApiOperation(value = "Salva a imagem da doação.")
+    @PutMapping( value = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<Map<String, String>> upload(@PathVariable Integer id, @RequestPart("file") Mono<FilePart> file) {
+        return service.upload(id, file);
     }
 
     @ApiOperation(value = "Atualiza uma doação.")
