@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple3;
 
 import java.util.Map;
+import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Service
@@ -45,20 +46,6 @@ public class DonationServiceImpl implements DonationService {
     }
 
     @Override
-    public Mono< Map<String, String> > upload(Integer id, Mono<FilePart> file) {
-        return userService.getUser()
-                .flatMap(userDTO -> donationRepository.findByIdAndDonorId(id,userDTO.getId()))
-                .switchIfEmpty(Mono.error(new BusinessException("Doação não encontrada. Verifique se a doação pertence ao usuário!")))
-                .flatMap( donation -> s3Service.uploadF(file)
-                        .flatMap(src -> {
-                            donation.setImageSrc(src);
-                            return donationRepository.save(donation);
-                        })
-                        .map( donation1 -> Map.of( "imageSrc", donation1.getImageSrc() ) )
-                );
-    }
-
-    @Override
     public Flux<DonationDTO> findByUser() {
         return userService.getUser()
                 .flatMapMany(userDTO -> donationRepository.findAllByDonorIdOrReceiverId(userDTO.getId(), userDTO.getId()))
@@ -67,29 +54,36 @@ public class DonationServiceImpl implements DonationService {
 
 
     @Override
-    public Mono<DonationDTO> save(CreateNewDonationDTO createNewDonationDTO) {
+    public Mono<DonationDTO> save(Mono<FilePart> file, CreateNewDonationDTO createNewDonationDTO) {
         return userService.getUser()
-            .flatMap(userDTO -> {
-                // se o doador escolheu que vai levar até o local e o recebedor não passou o seu endereço então lança exceção
-                if ( !createNewDonationDTO.getIsDelivery() && createNewDonationDTO.getAddressId() == null ){
-                    return Mono.error( new BusinessException("O doador escolheu 'Prefiro que venham até mim', porém não foi informado o código do endereço.") );
-                }
+                .flatMap(userDTO -> {
+                    // se o doador escolheu que vai levar até o local e o recebedor não passou o seu endereço então lança a exceção
+                    if ( !createNewDonationDTO.getIsDelivery() && createNewDonationDTO.getAddressId() == null ){
+                        return Mono.error( new BusinessException("O doador escolheu 'Prefiro que venham até mim', porém não foi informado o código do endereço.") );
+                    }
 
-                var donationEntity = donationMapper.toEntity(createNewDonationDTO);
-                donationEntity.setDonorId(userDTO.getId());
-                donationEntity.setStatus(DonationStatus.PENDENTE);
+                    var donationEntity = donationMapper.toEntity(createNewDonationDTO);
+                    donationEntity.setDonorId(userDTO.getId());
+                    donationEntity.setStatus(DonationStatus.PENDENTE);
 
-                if ( !createNewDonationDTO.getIsDelivery() ){
-                    return addressService.findById( createNewDonationDTO.getAddressId() )
-                            .flatMap( addressDTO -> {
-                                donationEntity.setDonorAddressId( addressDTO.getId() );
+                    if ( !createNewDonationDTO.getIsDelivery() ){
+                        return s3Service.uploadF(file)
+                                .flatMap( imageSrc -> addressService.findById(createNewDonationDTO.getAddressId() )
+                                    .flatMap( addressDTO -> {
+                                        donationEntity.setImageSrc(imageSrc);
+                                        donationEntity.setDonorAddressId(addressDTO.getId());
+                                        return donationRepository.save(donationEntity);
+                                    })
+                                );
+                    }
+
+                    return s3Service.uploadF(file)
+                            .flatMap(s -> {
+                                donationEntity.setImageSrc(s);
                                 return donationRepository.save(donationEntity);
                             });
-                }
-
-                return donationRepository.save(donationEntity);
-            })
-            .flatMap( this::mapToDonationDTO );
+                })
+                .flatMap( this::mapToDonationDTO );
     }
 
     @Override

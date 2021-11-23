@@ -39,15 +39,8 @@ public class DonationController {
     @ApiOperation(value = "Salva uma nova doação.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<DonationDTO> save( @RequestBody @Valid CreateNewDonationDTO body ){
-        return service.save(body);
-    }
-
-    @ApiOperation(value = "Salva a imagem da doação.")
-    @PutMapping( value = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
-    @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Map<String, String>> upload(@PathVariable Integer id, @RequestPart("file") Mono<FilePart> file) {
-        return service.upload(id, file);
+    public Mono<DonationDTO> save( @RequestPart("image") Mono<FilePart> file, @Valid CreateNewDonationDTO body ){
+        return service.save(file, body);
     }
 
     @ApiOperation(value = "Atualiza uma doação.")
