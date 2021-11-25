@@ -5,6 +5,7 @@ import com.labes.doe.exception.BusinessException;
 import com.labes.doe.exception.NotFoundException;
 import com.labes.doe.service.UserService;
 import com.labes.doe.util.MessageUtil;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.labes.doe.mapper.AddressMapper;
@@ -14,6 +15,9 @@ import com.labes.doe.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 @Service
@@ -87,8 +91,9 @@ public class AddressServiceImpl implements AddressService {
 	public Mono<Void> delete(Integer id) {
 		return userService.getUser()
 				.flatMap(userDTO -> addressRepository.findByIdAndUserId(id,userDTO.getId()))
-				.switchIfEmpty(Mono.error(new BusinessException("Endereço não encontrado. Verifique se o endereço pertence ao usuário!")))
-				.flatMap(addressRepository::delete);
+				.switchIfEmpty(Mono.error(new BusinessException("Endereço não encontrado! Verifique se o endereço pertence ao usuário.")))
+				.flatMap(addressRepository::delete)
+				.onErrorResume(DataIntegrityViolationException.class, e -> Mono.error(new BusinessException("Deleção não permitida! O endereço está relacionado com outros cadastros.")));
 	}
 
 }

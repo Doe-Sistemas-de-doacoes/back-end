@@ -11,9 +11,12 @@ import com.labes.doe.service.AddressService;
 import com.labes.doe.service.DonationService;
 import com.labes.doe.service.S3Service;
 import com.labes.doe.service.UserService;
+import com.labes.doe.service.security.impl.UserDetailsImpl;
 import com.labes.doe.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Service;
 import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
@@ -21,7 +24,9 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple3;
 
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 @Service
@@ -35,8 +40,10 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public Flux<DonationDTO> findAll(DonationStatus status) {
-        return Flux.just(status)
-                .flatMap(donationRepository::findByStatus)
+        return getIdLogedUser()
+                .flatMapMany(userId -> donationRepository
+                        .findByStatusAndDonorIdIsNot(status, userId) )
+                .switchIfEmpty( donationRepository.findByStatus(status) )
                 .flatMap(this::mapToDonationDTO);
     }
 
@@ -131,7 +138,8 @@ public class DonationServiceImpl implements DonationService {
         return userService.getUser()
                 .flatMap(userDTO -> donationRepository.findByIdAndDonorId(id,userDTO.getId()))
                 .switchIfEmpty(Mono.error(new BusinessException("Doação não encontrada. Verifique se a doação pertence ao usuário!")))
-                .flatMap(donationRepository::delete);
+                .flatMap(donationRepository::delete)
+                .onErrorResume(DataIntegrityViolationException.class, e -> Mono.error(new BusinessException("Deleção não permitida! A doação está relacionada com outros cadastros.")));
     }
 
     private Mono<DonationDTO> mapToDonationDTO( Donation donation ) {
@@ -171,6 +179,14 @@ public class DonationServiceImpl implements DonationService {
     protected Mono<Donation> getDonation(Integer id) {
         return donationRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException(MessageUtil.DONATION_NOT_FOUND)));
+    }
+
+    private Mono<Integer> getIdLogedUser() {
+        return ReactiveSecurityContextHolder.getContext()
+                .map(securityContext -> {
+                    var principal = (UserDetailsImpl) securityContext.getAuthentication().getPrincipal();
+                    return principal.getId();
+                });
     }
 
 }

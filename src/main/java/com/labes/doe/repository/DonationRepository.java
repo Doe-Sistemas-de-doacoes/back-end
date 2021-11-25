@@ -7,6 +7,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface DonationRepository extends ReactiveCrudRepository<Donation, Integer> {
+    Flux<Donation> findByStatusAndDonorIdIsNot(DonationStatus status, Integer donorId);
     Flux<Donation> findByStatus(DonationStatus status);
     Mono<Long> countByStatus(DonationStatus status);
     Flux<Donation> findAllByDonorIdOrReceiverId( Integer donorId, Integer receiverId );

@@ -11,6 +11,7 @@ import com.labes.doe.service.UserService;
 import com.labes.doe.service.security.impl.UserDetailsImpl;
 import com.labes.doe.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -63,7 +64,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<Void> delete() {
-        return getLoggedUser().flatMap(repository::delete);
+        return getLoggedUser()
+                .flatMap(repository::delete)
+                .onErrorResume(DataIntegrityViolationException.class, e -> Mono.error(new BusinessException("Deleção não permitida! O usuário está relacionado com outros cadastros.")));
     }
 
     private Mono<User> getLoggedUser() {

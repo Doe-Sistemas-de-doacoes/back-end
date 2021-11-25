@@ -4,6 +4,7 @@ import com.labes.doe.exception.BusinessException;
 import com.labes.doe.exception.InvalidTokenException;
 import com.labes.doe.exception.NotFoundException;
 import com.labes.doe.exception.InvalidUsernamePasswordException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -40,6 +41,13 @@ public class ExceptionController {
     public Mono< Map<String, String> > InvalidTokenException(InvalidTokenException exception){
         exception.printStackTrace();
         return Mono.just( Map.of("error", exception.getMessage()));
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Mono< Map<String, String> > InvalidTokenException(ExpiredJwtException exception) {
+        exception.printStackTrace();
+        return Mono.just(Map.of("error", "Token jwt expirado!"));
     }
 
     @ExceptionHandler(Exception.class)
