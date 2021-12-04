@@ -1,16 +1,16 @@
 package com.labes.doe.controller;
 
-import com.labes.doe.dto.CreateNewUserDTO;
-import com.labes.doe.dto.DonationDTO;
-import com.labes.doe.dto.UpdateUserDTO;
-import com.labes.doe.dto.UserDTO;
+import com.labes.doe.dto.*;
+import com.labes.doe.model.enumeration.DonationStatus;
 import com.labes.doe.service.AddressService;
 import com.labes.doe.service.DonationService;
-import com.labes.doe.dto.UserAdressDTO;
 import com.labes.doe.service.UserService;
+import com.labes.doe.service.security.impl.UserDetailsImpl;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -34,8 +34,22 @@ public class UserController {
 
     @ApiOperation(value = "Retorna todas as doações do usuário.")
     @GetMapping("/donations")
-    public Flux<DonationDTO> getDonations(){
-        return donationService.findByUser();
+    public Mono<Page<DonationDTO>> getDonations( DonationFilterDTO filter ){
+        return ReactiveSecurityContextHolder.getContext()
+                .flatMap(securityContext -> {
+                    var user = (UserDetailsImpl) securityContext.getAuthentication().getPrincipal();
+                    return donationService.findDonationsByUser(user.getId(), filter);
+                });
+    }
+
+    @ApiOperation(value = "Retorna todas as reservas do usuário.")
+    @GetMapping("/reservations")
+    public Mono<Page<DonationDTO>> getReservations( DonationFilterDTO filter ){
+        return ReactiveSecurityContextHolder.getContext()
+                .flatMap(securityContext -> {
+                    var user = (UserDetailsImpl) securityContext.getAuthentication().getPrincipal();
+                    return donationService.findReservationsByUser(user.getId(), filter);
+                });
     }
 
     @ApiOperation(value = "Salva um novo usuário.")

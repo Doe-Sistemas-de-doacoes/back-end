@@ -1,15 +1,22 @@
 package com.labes.doe.controller;
 
 import com.labes.doe.dto.*;
+import com.labes.doe.model.Donation;
 import com.labes.doe.model.enumeration.DonationStatus;
 import com.labes.doe.service.DonationService;
 import com.labes.doe.service.S3Service;
+import com.labes.doe.service.security.impl.UserDetailsImpl;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,10 +31,15 @@ public class DonationController {
 
     private final DonationService service;
 
-    @ApiOperation("Busca todas as doações por status. Se status for FINALIZADO retorna todas as doações encerradas senão retorna todas as doações disponiveis.")
+    @ApiOperation("Busca todas as doações.")
     @GetMapping
-    public Flux<DonationDTO> findAll( @RequestParam( defaultValue = "PENDENTE", required = false) String status ){
-        return service.findAll( DonationStatus.valueOf(status) );
+    public Mono<Page<DonationDTO>> findAll( DonationFilterDTO filter ){
+        return ReactiveSecurityContextHolder.getContext()
+                .flatMap(securityContext -> {
+                    var user = (UserDetailsImpl) securityContext.getAuthentication().getPrincipal();
+                    return service.findAll( user.getId(), filter);
+                })
+                .switchIfEmpty(service.findAll(0, filter));
     }
 
     @ApiOperation(value = "Retorna a quantidade de doações conforme seu status.")

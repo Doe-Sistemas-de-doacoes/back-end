@@ -38,14 +38,7 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
                 )
                 .filter(b -> b.startsWith("Bearer "))
                 .map(subs -> subs.substring(7))
-                .flatMap(token ->
-                    Mono.just(new UsernamePasswordAuthenticationToken (
-                            null,
-                            token,
-                            Collections.EMPTY_LIST
-                        )
-                    )
-                )
+                .flatMap(token -> Mono.just(new UsernamePasswordAuthenticationToken (null, token)))
                 .flatMap(auth -> authenticationManager.authenticate(auth))
                 .map(SecurityContextImpl::new);
     }
